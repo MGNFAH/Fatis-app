@@ -1,20 +1,8 @@
 @import "tailwindcss";
 @import "../node_modules/daisyui/daisyui.css";
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+ 
 body {
   background-color: black;
   color: white;
   font-family: Helvetica, sans-serif;
-}
-.masonry-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  padding: 16px;
 }
