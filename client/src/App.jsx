@@ -8,7 +8,6 @@ import CategoryBar from "./components/CategoryBar";
 import { BrowserRouter, Routes, Route } from 'react-router'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
       <BrowserRouter>

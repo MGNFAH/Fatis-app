@@ -1,9 +1,10 @@
-function Home() {
+
+import MasonryGrid from "../components/MasonryGrid";
+
+export default function Home() {
   return (
-    <div>
-      <h1>Home</h1>
-    </div>
+    <main>
+      <MasonryGrid />
+    </main>
   );
 }
-
-export default Home;
