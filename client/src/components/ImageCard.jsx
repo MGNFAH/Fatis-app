@@ -1,6 +1,6 @@
 export default function ImageCard({ image }) {
   return (
-    <div className="relative group cursor-pointer overflow-hidden rounded-lg">
+    <div className="relative group cursor-pointer overflow-hidden rounded-2xl mb-3 font-bold">
       {/* Immagine */}
       <img
         src={image.url}
