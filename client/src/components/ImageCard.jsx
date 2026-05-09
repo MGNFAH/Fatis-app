@@ -112,37 +112,37 @@ export default function ImageCard({ image, onSpark }) {
     : image.lovers || [];
   const localViews = viewed ? image.views + 1 : image.views;
 
-  const handleLove = (e) => {
-    e.stopPropagation();
-    if (!sparkedRef.current) {
-      setAnimating(true);
-      setTimeout(() => setAnimating(false), 400);
-      setGlowing(true);
-      setTimeout(() => setGlowing(false), 700);
-      setBouncing(true);
-      setTimeout(() => setBouncing(false), 500);
-      onSpark?.();
-      playLove();
-    } else {
-      playUnlove();
-    }
-    sparkedRef.current = !sparkedRef.current;
-    setSparked(sparkedRef.current);
-  };
+ const handleLove = (e) => {
+   e.stopPropagation();
+   if (!sparkedRef.current) {
+     setAnimating(true);
+     setTimeout(() => setAnimating(false), 400);
+     setGlowing(true);
+     setTimeout(() => setGlowing(false), 700);
+     setBouncing(true);
+     setTimeout(() => setBouncing(false), 500);
+     onSpark?.();
+     playLove();
+   } else {
+     playUnlove();
+   }
+   sparkedRef.current = !sparkedRef.current; // ← aggiorna ref PRIMA
+   setSparked(sparkedRef.current); // ← poi aggiorna state
+ };
 
-  const handleDoubleTap = (e) => {
-    const now = Date.now();
-    const DOUBLE_TAP_DELAY = 300;
+ const handleDoubleTap = (e) => {
+   const now = Date.now();
+   const DOUBLE_TAP_DELAY = 350; // leggermente più alto per trackpad Mac
 
-    if (now - lastTap.current < DOUBLE_TAP_DELAY) {
-      if (!sparkedRef.current) {
-        handleLove(e);
-      }
-      lastTap.current = 0;
-    } else {
-      lastTap.current = now;
-    }
-  };
+   if (now - lastTap.current < DOUBLE_TAP_DELAY) {
+     lastTap.current = 0;
+     if (!sparkedRef.current) {
+       handleLove(e);
+     }
+   } else {
+     lastTap.current = now;
+   }
+ };
 
   return (
     <div
@@ -155,7 +155,6 @@ export default function ImageCard({ image, onSpark }) {
         transition: "box-shadow 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
       }}
       onClick={handleDoubleTap}
-      onTouchEnd={handleDoubleTap}
       onMouseEnter={() => {
         if (!viewed) {
           setViewed(true);
