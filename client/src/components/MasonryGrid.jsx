@@ -1,4 +1,3 @@
-import { useState } from "react";
 import ImageCard from "./ImageCard";
 
 // ...fakeImages con i nuovi campi...
@@ -185,6 +184,7 @@ const fakeImages = [
       "https://www.nationalgallery.org.uk/paintings/jan-van-eyck-the-arnolfini-portrait",
     views: 28900,
     loves: 2340,    
+    avatar: "https://picsum.photos/seed/user_luca/40/40",
   },
   {
     id: 16,
