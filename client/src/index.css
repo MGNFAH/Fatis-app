@@ -34,3 +34,14 @@ body {
   0%   { opacity: 0; transform: translateY(-4px) scale(0.85); }
   100% { opacity: 1; transform: translateY(0)    scale(1); }
 }
+
+/* Visibile solo su dispositivi touch (no hover) */
+.touch-love-btn {
+  display: none;
+}
+
+@media (hover: none) {
+  .touch-love-btn {
+    display: block;
+  }
+}

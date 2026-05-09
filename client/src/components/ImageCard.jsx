@@ -1,14 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, forwardRef, useImperativeHandle } from "react";
 import { FaHeart, FaEye } from "react-icons/fa";
 import { useHeartSound } from "../hooks/useHeartSound";
 
 function LevelBadge({ level }) {
   return (
-    <span
-      className="absolute -bottom-1 -right-1 text-[9px] font-bold leading-none
-                 bg-[#E8000D] text-white rounded-full w-4 h-4
-                 flex items-center justify-center border border-black/40"
-    >
+    <span className="absolute -bottom-1 -right-1 text-[9px] font-bold leading-none bg-[#E8000D] text-white rounded-full w-4 h-4 flex items-center justify-center border border-black/40">
       {level}
     </span>
   );
@@ -24,34 +20,21 @@ function fmt(n) {
 function LoversPreview({ lovers, loves }) {
   if (!loves || loves === 0)
     return (
-      <span
-        className="text-[9px] leading-tight text-right"
-        style={{ color: "rgba(255,255,255,0.35)" }}
-      >
+      <span className="text-[9px] leading-tight text-right" style={{ color: "rgba(255,255,255,0.35)" }}>
         Sii il primo ❤
       </span>
     );
-
   return (
     <div className="flex items-center justify-end gap-1">
       <div className="flex -space-x-1">
         {lovers.slice(0, 3).map((name, i) => (
-          <img
-            key={i}
-            src={`https://picsum.photos/seed/${name}/20/20`}
-            alt={name}
+          <img key={i} src={`https://picsum.photos/seed/${name}/20/20`} alt={name}
             className="w-3.5 h-3.5 rounded-full object-cover"
-            style={{
-              border: "1px solid rgba(0,0,0,0.5)",
-              zIndex: 3 - i,
-            }}
+            style={{ border: "1px solid rgba(0,0,0,0.5)", zIndex: 3 - i }}
           />
         ))}
       </div>
-      <span
-        className="text-[9px] leading-tight"
-        style={{ color: "rgba(255,255,255,0.4)" }}
-      >
+      <span className="text-[9px] leading-tight" style={{ color: "rgba(255,255,255,0.4)" }}>
         and more
       </span>
     </div>
@@ -60,42 +43,25 @@ function LoversPreview({ lovers, loves }) {
 
 function TrendingBadge({ loves }) {
   if (loves < 1000) return null;
-
   const tier =
-    loves >= 10000
-      ? { label: "🔥 Hot", bg: "rgba(232,0,13,0.85)" }
-      : loves >= 5000
-        ? { label: "🔥 Trending", bg: "rgba(200,60,0,0.82)" }
-        : { label: "✦ Popular", bg: "rgba(30,30,30,0.78)" };
-
+    loves >= 10000 ? { label: "🔥 Hot", bg: "rgba(232,0,13,0.85)" }
+    : loves >= 5000 ? { label: "🔥 Trending", bg: "rgba(200,60,0,0.82)" }
+    : { label: "✦ Popular", bg: "rgba(30,30,30,0.78)" };
   return (
-    <span
-      style={{
-        background: tier.bg,
-        backdropFilter: "blur(6px)",
-        WebkitBackdropFilter: "blur(6px)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        color: "white",
-        fontSize: "9px",
-        fontWeight: 700,
-        letterSpacing: "0.04em",
-        padding: "2px 7px",
-        borderRadius: "999px",
-        lineHeight: 1.4,
-        boxShadow:
-          loves >= 5000
-            ? "0 0 10px rgba(232,0,13,0.4)"
-            : "0 1px 4px rgba(0,0,0,0.4)",
-        pointerEvents: "none",
-        userSelect: "none",
-      }}
-    >
+    <span style={{
+      background: tier.bg, backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+      border: "1px solid rgba(255,255,255,0.12)", color: "white", fontSize: "9px",
+      fontWeight: 700, letterSpacing: "0.04em", padding: "2px 7px", borderRadius: "999px",
+      lineHeight: 1.4,
+      boxShadow: loves >= 5000 ? "0 0 10px rgba(232,0,13,0.4)" : "0 1px 4px rgba(0,0,0,0.4)",
+      pointerEvents: "none", userSelect: "none",
+    }}>
       {tier.label}
     </span>
   );
 }
 
-export default function ImageCard({ image, onSpark }) {
+const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
   const [sparked, setSparked] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [glowing, setGlowing] = useState(false);
@@ -103,46 +69,29 @@ export default function ImageCard({ image, onSpark }) {
   const [viewed, setViewed] = useState(false);
   const [viewBouncing, setViewBouncing] = useState(false);
   const { playLove, playUnlove } = useHeartSound();
-  const lastTap = useRef(0);
   const sparkedRef = useRef(false);
 
   const localLoves = sparked ? image.loves + 1 : image.loves;
-  const localLovers = sparked
-    ? ["tu", ...(image.lovers || [])]
-    : image.lovers || [];
+  const localLovers = sparked ? ["tu", ...(image.lovers || [])] : image.lovers || [];
   const localViews = viewed ? image.views + 1 : image.views;
 
- const handleLove = (e) => {
-   e.stopPropagation();
-   if (!sparkedRef.current) {
-     setAnimating(true);
-     setTimeout(() => setAnimating(false), 400);
-     setGlowing(true);
-     setTimeout(() => setGlowing(false), 700);
-     setBouncing(true);
-     setTimeout(() => setBouncing(false), 500);
-     onSpark?.();
-     playLove();
-   } else {
-     playUnlove();
-   }
-   sparkedRef.current = !sparkedRef.current; // ← aggiorna ref PRIMA
-   setSparked(sparkedRef.current); // ← poi aggiorna state
- };
+  const handleLove = (e) => {
+    e?.stopPropagation();
+    if (!sparkedRef.current) {
+      setAnimating(true); setTimeout(() => setAnimating(false), 400);
+      setGlowing(true);   setTimeout(() => setGlowing(false), 700);
+      setBouncing(true);  setTimeout(() => setBouncing(false), 500);
+      onSpark?.();
+      playLove();
+    } else {
+      playUnlove();
+    }
+    sparkedRef.current = !sparkedRef.current;
+    setSparked(sparkedRef.current);
+  };
 
- const handleDoubleTap = (e) => {
-   const now = Date.now();
-   const DOUBLE_TAP_DELAY = 350; // leggermente più alto per trackpad Mac
-
-   if (now - lastTap.current < DOUBLE_TAP_DELAY) {
-     lastTap.current = 0;
-     if (!sparkedRef.current) {
-       handleLove(e);
-     }
-   } else {
-     lastTap.current = now;
-   }
- };
+  // Espone handleLove a MasonryGrid tramite ref
+  useImperativeHandle(ref, () => ({ triggerLove: handleLove }));
 
   return (
     <div
@@ -154,7 +103,6 @@ export default function ImageCard({ image, onSpark }) {
           : "0 0 0 0px transparent",
         transition: "box-shadow 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
       }}
-      onClick={handleDoubleTap}
       onMouseEnter={() => {
         if (!viewed) {
           setViewed(true);
@@ -163,7 +111,6 @@ export default function ImageCard({ image, onSpark }) {
         }
       }}
     >
-      {/* Immagine — leggero zoom in hover */}
       <img
         src={image.url}
         alt={image.title}
@@ -177,7 +124,6 @@ export default function ImageCard({ image, onSpark }) {
         onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
       />
 
-      {/* Badge trending — sempre visibile */}
       {image.loves >= 1000 && (
         <div
           className="absolute top-2 left-2 z-10"
@@ -191,8 +137,40 @@ export default function ImageCard({ image, onSpark }) {
           <TrendingBadge loves={image.loves} />
         </div>
       )}
-
-      {/* Overlay */}
+      {/* Cuore fisso — visibile solo su touch device, stesso angolo del pulsante hover */}
+      <div
+        className="absolute top-2 right-2 z-10 touch-love-btn"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleLove(e);
+        }}
+      >
+        <div
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold
+      ${sparked ? "bg-[#E8000D] text-white" : "bg-white/90 text-[#E8000D]"}`}
+          style={{
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            boxShadow: sparked
+              ? "0 0 12px rgba(232,0,13,0.45)"
+              : "0 2px 8px rgba(0,0,0,0.25)",
+            transition:
+              "background 250ms ease, box-shadow 250ms ease, transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+            transform: animating ? "scale(1.15)" : "scale(1)",
+          }}
+        >
+          <FaHeart
+            style={{
+              fontSize: "11px",
+              transform: animating
+                ? "scale(1.4) rotate(-15deg)"
+                : "scale(1) rotate(0deg)",
+              transition: "transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }}
+          />
+          {sparked ? "Loving" : "Love"}
+        </div>
+      </div>
       <div
         className="absolute inset-0 flex flex-col justify-between p-3"
         style={{
@@ -204,7 +182,6 @@ export default function ImageCard({ image, onSpark }) {
         onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
       >
-        {/* TOP — pulsante Love it */}
         <div
           className="flex justify-end"
           style={{
@@ -229,7 +206,10 @@ export default function ImageCard({ image, onSpark }) {
           }}
         >
           <button
-            onClick={(e) => { e.stopPropagation(); handleLove(e); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleLove(e);
+            }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
               ${sparked ? "bg-[#E8000D] text-white" : "bg-white text-[#E8000D]"}`}
             style={{
@@ -267,7 +247,6 @@ export default function ImageCard({ image, onSpark }) {
           </button>
         </div>
 
-        {/* BOTTOM — autore + stats */}
         <div
           className="flex items-end justify-between gap-2"
           style={{
@@ -291,7 +270,6 @@ export default function ImageCard({ image, onSpark }) {
             card.addEventListener("mouseleave", hide);
           }}
         >
-          {/* Sinistra — avatar + titolo/autore */}
           <div className="flex items-center gap-2 min-w-0">
             <div className="relative flex-shrink-0">
               <img
@@ -314,7 +292,6 @@ export default function ImageCard({ image, onSpark }) {
               />
               {image.authorLevel && <LevelBadge level={image.authorLevel} />}
             </div>
-
             <div className="min-w-0">
               <p className="text-white text-xs font-semibold truncate leading-tight">
                 {image.title}
@@ -325,9 +302,7 @@ export default function ImageCard({ image, onSpark }) {
             </div>
           </div>
 
-          {/* Destra — stats */}
           <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
-            {/* Views */}
             <div className="flex items-center gap-1">
               <FaEye className="text-white/40 text-[10px]" />
               <span
@@ -343,8 +318,6 @@ export default function ImageCard({ image, onSpark }) {
                 {fmt(localViews)}
               </span>
             </div>
-
-            {/* Hearts */}
             <div className="flex items-center gap-1">
               <FaHeart
                 className="text-[#E8000D] text-[10px]"
@@ -366,8 +339,6 @@ export default function ImageCard({ image, onSpark }) {
                 {fmt(localLoves)}
               </span>
             </div>
-
-            {/* Lovers — stack avatar + prompt */}
             <div
               style={{
                 opacity: sparked ? 1 : 0.85,
@@ -381,4 +352,6 @@ export default function ImageCard({ image, onSpark }) {
       </div>
     </div>
   );
-}
+});
+
+export default ImageCard;
