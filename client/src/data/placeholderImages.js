@@ -60,6 +60,11 @@ export const fakeImages = [
     views: 84320,
     loves: 5210,
     lovers: ["marco_b", "sofia_art"],
+    tags: ["oilpainting", "napoli", "goldenhour", "pleinair"],
+    comments: [
+      { author: "sofia_art", text: "Colori magnifici! 🔥" },
+      { author: "marco_b", text: "Questa luce è incredibile" },
+    ],
   },
   {
     id: 5,
@@ -76,6 +81,11 @@ export const fakeImages = [
     views: 84320,
     loves: 5210,
     lovers: ["marco_b", "sofia_art"],
+    tags: ["oilpainting", "napoli", "goldenhour", "pleinair"],
+    comments: [
+      { author: "sofia_art", text: "Colori magnifici! 🔥" },
+      { author: "marco_b", text: "Questa luce è incredibile" },
+    ],
   },
   {
     id: 6,
@@ -91,6 +101,11 @@ export const fakeImages = [
     views: 84320,
     loves: 5210,
     lovers: ["marco_b", "sofia_art"],
+    tags: ["oilpainting", "napoli", "goldenhour", "pleinair"],
+    comments: [
+      { author: "sofia_art", text: "Colori magnifici! 🔥" },
+      { author: "marco_b", text: "Questa luce è incredibile" },
+    ],
   },
   {
     id: 7,
@@ -106,6 +121,11 @@ export const fakeImages = [
     views: 84320,
     loves: 5210,
     lovers: ["marco_b", "sofia_art"],
+    tags: ["oilpainting", "napoli", "goldenhour", "pleinair"],
+    comments: [
+      { author: "sofia_art", text: "Colori magnifici! 🔥" },
+      { author: "marco_b", text: "Questa luce è incredibile" },
+    ],
   },
   {
     id: 8,
@@ -121,6 +141,11 @@ export const fakeImages = [
     views: 84320,
     loves: 5210,
     lovers: ["marco_b", "sofia_art"],
+    tags: ["oilpainting", "napoli", "goldenhour", "pleinair"],
+    comments: [
+      { author: "sofia_art", text: "Colori magnifici! 🔥" },
+      { author: "marco_b", text: "Questa luce è incredibile" },
+    ],
   },
   {
     id: 9,
@@ -136,6 +161,11 @@ export const fakeImages = [
     views: 84320,
     loves: 5210,
     lovers: ["marco_b", "sofia_art"],
+    tags: ["oilpainting", "napoli", "goldenhour", "pleinair"],
+    comments: [
+      { author: "sofia_art", text: "Colori magnifici! 🔥" },
+      { author: "marco_b", text: "Questa luce è incredibile" },
+    ],
   },
   {
     id: 10,
@@ -151,6 +181,11 @@ export const fakeImages = [
     views: 84320,
     loves: 5210,
     lovers: ["marco_b", "sofia_art"],
+    tags: ["oilpainting", "napoli", "goldenhour", "pleinair"],
+    comments: [
+      { author: "sofia_art", text: "Colori magnifici! 🔥" },
+      { author: "marco_b", text: "Questa luce è incredibile" },
+    ],
   },
   {
     id: 11,
