@@ -11,6 +11,9 @@ export const fakeImages = [
     views: 84320,
     loves: 5210,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 12,
+    loves: 432,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 2,
@@ -23,6 +26,9 @@ export const fakeImages = [
     views: 312000,
     loves: 21400,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 3,
@@ -35,6 +41,9 @@ export const fakeImages = [
     views: 47800,
     loves: 3890,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 4,
@@ -48,6 +57,9 @@ export const fakeImages = [
     views: 61200,
     loves: 4720,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 5,
@@ -61,6 +73,9 @@ export const fakeImages = [
     views: 128000,
     loves: 9870,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 6,
@@ -73,6 +88,9 @@ export const fakeImages = [
     views: 39400,
     loves: 2980,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 7,
@@ -85,6 +103,9 @@ export const fakeImages = [
     views: 58400,
     loves: 4760,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 8,
@@ -97,6 +118,9 @@ export const fakeImages = [
     views: 52100,
     loves: 4410,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 9,
@@ -109,6 +133,9 @@ export const fakeImages = [
     views: 68900,
     loves: 5830,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 10,
@@ -121,6 +148,9 @@ export const fakeImages = [
     views: 44700,
     loves: 3670,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 11,
@@ -133,6 +163,9 @@ export const fakeImages = [
     views: 95300,
     loves: 7120,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 12,
@@ -145,6 +178,9 @@ export const fakeImages = [
     views: 56800,
     loves: 4230,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 13,
@@ -157,6 +193,9 @@ export const fakeImages = [
     views: 112000,
     loves: 8940,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 14,
@@ -170,6 +209,9 @@ export const fakeImages = [
     views: 34200,
     loves: 2760,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 15,
@@ -183,6 +225,9 @@ export const fakeImages = [
     views: 28900,
     loves: 2340,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 16,
@@ -196,6 +241,9 @@ export const fakeImages = [
     views: 61500,
     loves: 4890,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 17,
@@ -209,6 +257,9 @@ export const fakeImages = [
     views: 41300,
     loves: 3180,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 18,
@@ -221,6 +272,9 @@ export const fakeImages = [
     views: 23800,
     loves: 1920,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 19,
@@ -234,6 +288,9 @@ export const fakeImages = [
     views: 77600,
     loves: 6340,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
   {
     id: 20,
@@ -247,5 +304,8 @@ export const fakeImages = [
     views: 88400,
     loves: 7010,
     avatar: "https://picsum.photos/seed/user_luca/40/40",
+    views: 84320,
+    loves: 5210,
+    lovers: ["marco_b", "sofia_art"],
   },
 ];

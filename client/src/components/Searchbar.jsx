@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useRotatingPlaceholder } from "../hooks/useRotatingPlaceholder";
-import { fakeImages } from "../data/fakeImages"; // ← dati condivisi
+import { fakeImages } from "../data/placeholderImages.js"; // ← dati condivisi
 
 export default function SearchBar({ onSelectImage }) {
   // ← prop aggiunta
