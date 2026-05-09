@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { FaHeart, FaEye } from "react-icons/fa";
 import { useHeartSound } from "../hooks/useHeartSound";
 
@@ -103,7 +103,7 @@ export default function ImageCard({ image, onSpark }) {
   const [viewed, setViewed] = useState(false);
   const [viewBouncing, setViewBouncing] = useState(false);
   const { playLove, playUnlove } = useHeartSound();
-
+  const lastTap = useRef(0);
   const localLoves = sparked ? image.loves + 1 : image.loves;
   const localLovers = sparked
     ? ["tu", ...(image.lovers || [])]
@@ -127,6 +127,20 @@ export default function ImageCard({ image, onSpark }) {
     setSparked(!sparked);
   };
 
+  const handleDoubleTap = (e) => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300; // ms
+
+    if (now - lastTap.current < DOUBLE_TAP_DELAY) {
+      // Doppio tap rilevato — lova solo se non già lovato
+      if (!sparked) {
+        handleLove(e);
+      }
+      lastTap.current = 0; // reset per evitare triplo
+    } else {
+      lastTap.current = now;
+    }
+  };
   return (
     <div
       className="relative group cursor-pointer overflow-hidden rounded-lg"
@@ -154,6 +168,8 @@ export default function ImageCard({ image, onSpark }) {
         style={{
           transition: "transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         }}
+        onClick={handleDoubleTap} // ← doppio click desktop
+        onTouchEnd={handleDoubleTap} // ← doppio tap mobile
         onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
         onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
       />
