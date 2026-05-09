@@ -1,6 +1,19 @@
 import { Link } from "react-router";
+jsx;
+import { useState, useEffect, useRef } from "react";
+import { FaHeart } from "react-icons/fa";
 
-export default function Navbar() {
+export default function Navbar({ sparkCount }) {
+    const [bump, setBump] = useState(false)
+  const prevCount = useRef(sparkCount)
+
+  useEffect(() => {
+    if (sparkCount > prevCount.current) {
+      setBump(true)
+      setTimeout(() => setBump(false), 400)
+      prevCount.current = sparkCount
+    }
+  }, [sparkCount])
   return (
     <nav className="flex items-center justify-between px-6 py-3 bg-black text-white">
       {/* SINISTRA — Logo + link */}
@@ -43,6 +56,32 @@ export default function Navbar() {
         >
           Sign up
         </Link>
+      </div>
+      {/* Spark counter */}
+      <div className="flex items-center gap-2 text-neutral-300 text-sm">
+        <div className="relative">
+          <FaHeart
+            className={`text-[#E8000D] text-lg transition-transform ${bump ? "scale-150" : "scale-100"}`}
+            style={{
+              transition: "transform 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97)",
+            }}
+          />
+          {sparkCount > 0 && (
+            <span
+              className={`absolute -top-2 -right-2 bg-[#E8000D] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center
+                ${bump ? "scale-125" : "scale-100"}`}
+              style={{
+                transition:
+                  "transform 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97)",
+              }}
+            >
+              {sparkCount}
+            </span>
+          )}
+        </div>
+        <span>
+          {sparkCount === 0 ? "Nessuno spark" : `${sparkCount} spark`}
+        </span>
       </div>
     </nav>
   );

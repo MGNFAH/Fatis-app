@@ -1,13 +1,23 @@
-
-
 import { useState } from 'react'
+import { FaHeart } from 'react-icons/fa'
 
-export default function ImageCard({ image }) {
+export default function ImageCard({ image, onSpark }) {
   const [sparked, setSparked] = useState(false)
+  const [animating, setAnimating] = useState(false)
+
+  const handleLove = (e) => {
+    e.stopPropagation()
+    if (!sparked) {
+      setAnimating(true)
+      setTimeout(() => setAnimating(false), 400)
+      onSpark?.() // notifica la navbar
+      
+    }
+  else  setSparked(!sparked)
+  }
 
   return (
-  <div className="relative group cursor-pointer overflow-hidden rounded-2xl mb-3 font-bold">
-      
+    <div className="relative group cursor-pointer overflow-hidden rounded-lg">
       <img
         src={image.url}
         alt={image.title}
@@ -15,30 +25,35 @@ export default function ImageCard({ image }) {
         loading="lazy"
       />
 
-      {/* Overlay al hover */}
-      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-3 flex flex-col justify-between">
-        
-        {/* Pulsante Spark in alto a destra */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3">
+
         <div className="flex justify-end">
           <button
-            onClick={(e) => {
-              e.stopPropagation() // evita di aprire il modale quando clicchi spark
-              setSparked(!sparked)
-            }}
-            className={`px-3 py-1 rounded-full text-sm font-semibold transition
+            onClick={handleLove
+                
+            }
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200
               ${sparked
-                ? 'bg-yellow-400 text-black'
-                : 'bg-white text-black hover:bg-yellow-400'
+                ? 'bg-[#E8000D] text-white'
+                : 'bg-white text-[#E8000D] hover:bg-[#E8000D] hover:text-white'
               }`}
           >
-            {sparked ? '✦ Sparked' : '✦ Spark'}
+            <FaHeart className={`text-sm ${animating ? 'heart-pop' : ''}`} />
+            {sparked ? 'I\'m loving it' : 'Love it'}
           </button>
         </div>
 
-        {/* Info in basso */}
-        <div>
-          <p className="text-white text-sm font-semibold truncate">{image.title}</p>
-          <p className="text-neutral-400 text-xs">@{image.author}</p>
+        <div className="flex items-center gap-2">
+          <img
+            src={image.avatar}
+            alt={image.author}
+            onClick={(e) => e.stopPropagation()}
+            className="w-8 h-8 rounded-full object-cover border-2 border-white/60 flex-shrink-0"
+          />
+          <div className="min-w-0">
+            <p className="text-white text-xs font-semibold truncate leading-tight">{image.title}</p>
+            <p className="text-neutral-300 text-xs truncate leading-tight">@{image.author}</p>
+          </div>
         </div>
 
       </div>
