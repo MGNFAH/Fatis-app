@@ -36,6 +36,7 @@ function App() {
         <ImageModal
           image={selectedImage}
           onClose={() => setSelectedImage(null)}
+          allImages={images}
         />
       )}
     </BrowserRouter>
