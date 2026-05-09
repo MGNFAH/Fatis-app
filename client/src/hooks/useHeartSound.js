@@ -51,5 +51,42 @@ export function useHeartSound() {
     setTimeout(() => ctx.close(), 300);
   };
 
-  return { playLove, playUnlove };
+  const playLevelUp = () => {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    
+    // Arpeggio ascendente trionfale — Do Mi Sol Do
+    const notes = [523, 659, 784, 1046]
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = 'sine'
+      const start = ctx.currentTime + i * 0.12
+      osc.frequency.setValueAtTime(freq, start)
+      gain.gain.setValueAtTime(0.0, start)
+      gain.gain.linearRampToValueAtTime(0.18, start + 0.04)
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.25)
+      osc.start(start)
+      osc.stop(start + 0.25)
+    })
+
+    // Nota finale lunga — rinforzo
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.type = 'sine'
+    const start = ctx.currentTime + 0.48
+    osc.frequency.setValueAtTime(1046, start)
+    osc.frequency.exponentialRampToValueAtTime(1318, start + 0.2)
+    gain.gain.setValueAtTime(0.15, start)
+    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.5)
+    osc.start(start)
+    osc.stop(start + 0.5)
+
+    setTimeout(() => ctx.close(), 1200)
+  }
+
+  return { playLove, playUnlove, playLevelUp }
 }

@@ -1,80 +1,100 @@
 import { Link } from "react-router";
 import { useState, useEffect, useRef } from "react";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaFire } from "react-icons/fa";
+import LoveGauge from "./LoveGauge";
+
 
 export default function Navbar({ sparkCount }) {
-  const [bump, setBump] = useState(false)
-  const prevCount = useRef(sparkCount)
+  const [bump, setBump] = useState(false);
+  const [streakBump, setStreakBump] = useState(false);
+  const prevCount = useRef(sparkCount);
+
+  // Streak — per ora valore fisso demo, poi verrà dal backend
+  const streakDays = 3;
 
   useEffect(() => {
     if (sparkCount > prevCount.current) {
-      setBump(true)
-      setTimeout(() => setBump(false), 400)
-      prevCount.current = sparkCount
+      setBump(true);
+      setStreakBump(true);
+      setTimeout(() => setBump(false), 400);
+      setTimeout(() => setStreakBump(false), 600);
+      prevCount.current = sparkCount;
     }
-  }, [sparkCount])
+  }, [sparkCount]);
 
   return (
-    <nav className="flex items-center justify-between px-6 py-3 bg-black text-white">
-      {/* SINISTRA — Logo + link + spark counter */}
+    <nav
+      className="
+      sticky top-0 z-50
+      flex items-center justify-between px-6 py-3
+      text-white
+      bg-black/60 backdrop-blur-md
+      border-b border-white/10
+      shadow-[0_4px_24px_rgba(0,0,0,0.3)]
+    "
+    >
+      {/* SINISTRA — Logo + pill */}
       <div className="flex items-center gap-3">
         <Link to="/" className="bg-white rounded-full p-2">
           <div className="w-6 h-6 bg-black rounded-full"></div>
         </Link>
-        <div className="flex items-center gap-1 bg-neutral-800 rounded-full px-4 py-2">
+
+        <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/10">
           <Link to="/explore" className="text-white font-semibold text-sm">
             Explore
           </Link>
-          <span className="text-neutral-500 text-sm px-1">|</span>
-          <Link to="#" className="text-neutral-400 text-sm">
+          <span className="text-white/30 text-sm px-1">|</span>
+          <Link to="#" className="text-white/60 text-sm">
             Careers
           </Link>
-          <span className="text-neutral-500 text-sm px-1">|</span>
+          <span className="text-white/30 text-sm px-1">|</span>
 
-          {/* Spark counter — inline nella pill */}
-          <div className="flex items-center gap-1.5">
-            <div className="relative flex items-center">
-              <FaHeart
-                className={`text-[#E8000D] text-sm`}
-                style={{
-                  transform: bump ? 'scale(1.5)' : 'scale(1)',
-                  transition: 'transform 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97)',
-                }}
-              />
-              {sparkCount > 0 && (
-                <span
-                  className="absolute -top-2 -right-2 bg-[#E8000D] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
-                  style={{
-                    transform: bump ? 'scale(1.25)' : 'scale(1)',
-                    transition: 'transform 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97)',
-                  }}
-                >
-                  {sparkCount}
-                </span>
-              )}
-            </div>
-            <span className="text-neutral-400 text-sm">
-              {sparkCount === 0 ? 'Nessun love' : `${sparkCount} loved`}
+          {/* ❤️ Spark counter */}
+          <LoveGauge sparkCount={sparkCount} />
+           
+
+          {/* 🔥 Streak */}
+          <div className="flex items-center gap-1">
+            <FaFire
+              className="text-orange-400 text-sm"
+              style={{
+                transform: streakBump ? "scale(1.4)" : "scale(1)",
+                transition:
+                  "transform 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97)",
+                filter: streakBump ? "drop-shadow(0 0 4px #fb923c)" : "none",
+              }}
+            />
+            <span
+              className="text-sm font-semibold"
+              style={{
+                color: streakBump ? "#fb923c" : "rgba(255,255,255,0.6)",
+                transition: "color 0.4s ease",
+              }}
+            >
+              {streakDays} {streakDays === 1 ? "giorno" : "giorni"}
             </span>
           </div>
-
         </div>
       </div>
 
-      {/* CENTRO — Barra di ricerca */}
-      <div className="flex items-center bg-neutral-800 rounded-full px-4 py-2 w-96">
-        <span className="text-neutral-400 mr-2">🔍</span>
+      {/* CENTRO — Search */}
+      <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 w-96 border border-white/10">
+        <span className="text-white/40 mr-2">🔍</span>
         <input
           type="text"
           placeholder="Search Fatis..."
-          className="bg-transparent text-white text-sm outline-none w-full placeholder-neutral-500"
+          className="bg-transparent text-white text-sm outline-none w-full placeholder-white/30"
         />
       </div>
 
-      {/* DESTRA — Icone + auth */}
+      {/* DESTRA — Auth */}
       <div className="flex items-center gap-3">
-        <button className="text-neutral-400 hover:text-white">📷</button>
-        <button className="text-neutral-400 hover:text-white">🌈</button>
+        <button className="text-white/40 hover:text-white transition">
+          📷
+        </button>
+        <button className="text-white/40 hover:text-white transition">
+          🌈
+        </button>
         <Link to="/login" className="text-white text-sm">
           Login
         </Link>
