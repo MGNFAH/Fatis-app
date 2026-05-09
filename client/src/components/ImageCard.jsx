@@ -20,8 +20,8 @@ function fmt(n) {
   if (n >= 1000) return (n / 1000).toFixed(1) + "K";
   return String(n);
 }
+
 function LoversPreview({ lovers, loves }) {
-  // Nessun love ancora — Spark Prompt
   if (!loves || loves === 0)
     return (
       <span
@@ -32,11 +32,34 @@ function LoversPreview({ lovers, loves }) {
       </span>
     );
 
-//Trending Badge
-function TrendingBadge({ loves }) {
-  const isTrending = loves >= 1000;
+  return (
+    <div className="flex items-center justify-end gap-1">
+      <div className="flex -space-x-1">
+        {lovers.slice(0, 3).map((name, i) => (
+          <img
+            key={i}
+            src={`https://picsum.photos/seed/${name}/20/20`}
+            alt={name}
+            className="w-3.5 h-3.5 rounded-full object-cover"
+            style={{
+              border: "1px solid rgba(0,0,0,0.5)",
+              zIndex: 3 - i,
+            }}
+          />
+        ))}
+      </div>
+      <span
+        className="text-[9px] leading-tight"
+        style={{ color: "rgba(255,255,255,0.4)" }}
+      >
+        and more
+      </span>
+    </div>
+  );
+}
 
-  if (!isTrending) return null;
+function TrendingBadge({ loves }) {
+  if (loves < 1000) return null;
 
   const tier =
     loves >= 10000
@@ -71,32 +94,7 @@ function TrendingBadge({ loves }) {
     </span>
   );
 }
-  // Stack di mini-avatar sovrapposti + "and more"
-  return (
-    <div className="flex items-center justify-end gap-1">
-      <div className="flex -space-x-1">
-        {lovers.slice(0, 3).map((name, i) => (
-          <img
-            key={i}
-            src={`https://picsum.photos/seed/${name}/20/20`}
-            alt={name}
-            className="w-3.5 h-3.5 rounded-full object-cover"
-            style={{
-              border: "1px solid rgba(0,0,0,0.5)",
-              zIndex: 3 - i,
-            }}
-          />
-        ))}
-      </div>
-      <span
-        className="text-[9px] leading-tight"
-        style={{ color: "rgba(255,255,255,0.4)" }}
-      >
-        and more
-      </span>
-    </div>
-  );
-}
+
 export default function ImageCard({ image, onSpark }) {
   const [sparked, setSparked] = useState(false);
   const [animating, setAnimating] = useState(false);
@@ -110,7 +108,8 @@ export default function ImageCard({ image, onSpark }) {
   const localLovers = sparked
     ? ["tu", ...(image.lovers || [])]
     : image.lovers || [];
-const localViews = viewed ? image.views + 1 : image.views;
+  const localViews = viewed ? image.views + 1 : image.views;
+
   const handleLove = (e) => {
     e.stopPropagation();
     if (!sparked) {
@@ -118,8 +117,8 @@ const localViews = viewed ? image.views + 1 : image.views;
       setTimeout(() => setAnimating(false), 400);
       setGlowing(true);
       setTimeout(() => setGlowing(false), 700);
-      setBouncing(true); // ← nuovo
-      setTimeout(() => setBouncing(false), 500); // ← nuovo
+      setBouncing(true);
+      setTimeout(() => setBouncing(false), 500);
       onSpark?.();
       playLove();
     } else {
@@ -139,9 +138,7 @@ const localViews = viewed ? image.views + 1 : image.views;
         transition: "box-shadow 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
       }}
       onMouseEnter={() => {
-        // ← nuovo
         if (!viewed) {
-          // ← conta solo la prima volta
           setViewed(true);
           setViewBouncing(true);
           setTimeout(() => setViewBouncing(false), 500);
@@ -176,7 +173,7 @@ const localViews = viewed ? image.views + 1 : image.views;
         </div>
       )}
 
-      {/* Overlay — fade + slide-up del contenuto */}
+      {/* Overlay */}
       <div
         className="absolute inset-0 flex flex-col justify-between p-3"
         style={{
@@ -188,7 +185,7 @@ const localViews = viewed ? image.views + 1 : image.views;
         onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
       >
-        {/* TOP — pulsante Love it, scende dall'alto */}
+        {/* TOP — pulsante Love it */}
         <div
           className="flex justify-end"
           style={{
@@ -215,9 +212,7 @@ const localViews = viewed ? image.views + 1 : image.views;
           <button
             onClick={handleLove}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
-              ${
-                sparked ? "bg-[#E8000D] text-white" : "bg-white text-[#E8000D]"
-              }`}
+              ${sparked ? "bg-[#E8000D] text-white" : "bg-white text-[#E8000D]"}`}
             style={{
               transition:
                 "background 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94), color 250ms ease, transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
@@ -253,7 +248,7 @@ const localViews = viewed ? image.views + 1 : image.views;
           </button>
         </div>
 
-        {/* BOTTOM — autore + stats, sale dal basso */}
+        {/* BOTTOM — autore + stats */}
         <div
           className="flex items-end justify-between gap-2"
           style={{
@@ -343,7 +338,7 @@ const localViews = viewed ? image.views + 1 : image.views;
               <span
                 className="text-white text-[10px] font-semibold tabular-nums"
                 style={{
-                  display: "inline-block", // necessario per transform su span
+                  display: "inline-block",
                   animation: bouncing
                     ? "counter-bounce 500ms cubic-bezier(0.34, 1.56, 0.64, 1)"
                     : "none",
