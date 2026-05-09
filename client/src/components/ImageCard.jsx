@@ -104,6 +104,8 @@ export default function ImageCard({ image, onSpark }) {
   const [viewBouncing, setViewBouncing] = useState(false);
   const { playLove, playUnlove } = useHeartSound();
   const lastTap = useRef(0);
+  const sparkedRef = useRef(false);
+
   const localLoves = sparked ? image.loves + 1 : image.loves;
   const localLovers = sparked
     ? ["tu", ...(image.lovers || [])]
@@ -112,7 +114,7 @@ export default function ImageCard({ image, onSpark }) {
 
   const handleLove = (e) => {
     e.stopPropagation();
-    if (!sparked) {
+    if (!sparkedRef.current) {
       setAnimating(true);
       setTimeout(() => setAnimating(false), 400);
       setGlowing(true);
@@ -124,23 +126,24 @@ export default function ImageCard({ image, onSpark }) {
     } else {
       playUnlove();
     }
-    setSparked(!sparked);
+    sparkedRef.current = !sparkedRef.current;
+    setSparked(sparkedRef.current);
   };
 
   const handleDoubleTap = (e) => {
     const now = Date.now();
-    const DOUBLE_TAP_DELAY = 300; // ms
+    const DOUBLE_TAP_DELAY = 300;
 
     if (now - lastTap.current < DOUBLE_TAP_DELAY) {
-      // Doppio tap rilevato — lova solo se non già lovato
-      if (!sparked) {
+      if (!sparkedRef.current) {
         handleLove(e);
       }
-      lastTap.current = 0; // reset per evitare triplo
+      lastTap.current = 0;
     } else {
       lastTap.current = now;
     }
   };
+
   return (
     <div
       className="relative group cursor-pointer overflow-hidden rounded-lg"
@@ -151,6 +154,8 @@ export default function ImageCard({ image, onSpark }) {
           : "0 0 0 0px transparent",
         transition: "box-shadow 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
       }}
+      onClick={handleDoubleTap}
+      onTouchEnd={handleDoubleTap}
       onMouseEnter={() => {
         if (!viewed) {
           setViewed(true);
@@ -167,14 +172,13 @@ export default function ImageCard({ image, onSpark }) {
         loading="lazy"
         style={{
           transition: "transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          pointerEvents: "none",
         }}
-        onClick={handleDoubleTap} // ← doppio click desktop
-        onTouchEnd={handleDoubleTap} // ← doppio tap mobile
         onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
         onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
       />
 
-      {/* Badge trending — sempre visibile, non dipende dall'hover */}
+      {/* Badge trending — sempre visibile */}
       {image.loves >= 1000 && (
         <div
           className="absolute top-2 left-2 z-10"
@@ -226,7 +230,7 @@ export default function ImageCard({ image, onSpark }) {
           }}
         >
           <button
-            onClick={handleLove}
+            onClick={(e) => { e.stopPropagation(); handleLove(e); }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
               ${sparked ? "bg-[#E8000D] text-white" : "bg-white text-[#E8000D]"}`}
             style={{
