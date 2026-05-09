@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { useState, useEffect, useRef } from "react";
 import { FaHeart, FaFire } from "react-icons/fa";
 import LoveGauge from "./LoveGauge";
-
+import SearchBar from "./SearchBar";
 
 export default function Navbar({ sparkCount }) {
   const [bump, setBump] = useState(false);
@@ -51,7 +51,6 @@ export default function Navbar({ sparkCount }) {
 
           {/* ❤️ Spark counter */}
           <LoveGauge sparkCount={sparkCount} />
-           
 
           {/* 🔥 Streak */}
           <div className="flex items-center gap-1">
@@ -78,14 +77,7 @@ export default function Navbar({ sparkCount }) {
       </div>
 
       {/* CENTRO — Search */}
-      <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 w-96 border border-white/10">
-        <span className="text-white/40 mr-2">🔍</span>
-        <input
-          type="text"
-          placeholder="Search Fatis..."
-          className="bg-transparent text-white text-sm outline-none w-full placeholder-white/30"
-        />
-      </div>
+      <SearchBar onSelectImage={onSelectImage} />
 
       {/* DESTRA — Auth */}
       <div className="flex items-center gap-3">

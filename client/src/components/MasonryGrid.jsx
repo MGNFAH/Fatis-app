@@ -251,179 +251,18 @@ const fakeImages = [
     avatar: "https://picsum.photos/seed/user_luca/40/40",
   },
 ];
-
-export default function MasonryGrid({ onSpark } ) {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [loved, setLoved] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const openModal = (image) => {
-    setSelectedImage(image);
-    setLoved(false);
-    setMenuOpen(false);
-  };
-
+export default function MasonryGrid({ onSpark, onSelectImage }) {
   return (
-    <>
-      {/* Griglia */}
-      <div className="p-4 columns-2 md:columns-3 lg:columns-4 xl:columns-4 gap-x-3">
-        {fakeImages.map((image) => (
-          <div
-            key={image.id}
-            className="mb-3 break-inside-avoid cursor-pointer"
-            onClick={() => openModal(image)}
-          >
-            <ImageCard image={image} onSpark={onSpark} />
-          </div>
-        ))}
-      </div>
-
-      {/* Modale */}
-      {selectedImage && (
+    <div className="p-4 columns-2 md:columns-3 lg:columns-4 xl:columns-4 gap-x-3">
+      {fakeImages.map((image) => (
         <div
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 md:p-6"
-          onClick={() => setSelectedImage(null)}
+          key={image.id}
+          className="mb-3 break-inside-avoid cursor-pointer"
+          onClick={() => onSelectImage(image)}
         >
-          <div
-            className="bg-neutral-900 rounded-2xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row max-h-[92vh]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* ── Colonna sinistra: immagine ── */}
-            <div className="md:w-1/2 bg-black flex items-center justify-center">
-              <img
-                src={selectedImage.url}
-                alt={selectedImage.title}
-                className="w-full h-full object-contain max-h-[92vh]"
-              />
-            </div>
-
-            {/* ── Colonna destra: info ── */}
-            <div className="md:w-1/2 p-6 flex flex-col gap-5 overflow-y-auto">
-              {/* Header: autore + chiudi + menu */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white font-semibold">
-                    @{selectedImage.author}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {/* Menu "..." */}
-                  <div className="relative">
-                    <button
-                      onClick={() => setMenuOpen(!menuOpen)}
-                      className="text-neutral-400 hover:text-white text-xl px-2 py-1 rounded-lg hover:bg-neutral-800 transition"
-                    >
-                      •••
-                    </button>
-
-                    {menuOpen && (
-                      <div className="absolute right-0 mt-1 w-52 bg-neutral-800 rounded-xl shadow-lg z-10 overflow-hidden text-sm">
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(selectedImage.source);
-                            setMenuOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-white transition flex items-center gap-2"
-                        >
-                          🔗 Condividi spark
-                        </button>
-                        <button
-                          onClick={() => {
-                            setMenuOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-neutral-300 transition flex items-center gap-2"
-                        >
-                          👤 Vedi profilo di @{selectedImage.author}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setMenuOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-red-400 transition flex items-center gap-2"
-                        >
-                          🚩 Segnala contenuto
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Chiudi */}
-                  <button
-                    onClick={() => setSelectedImage(null)}
-                    className="text-neutral-400 hover:text-white text-xl px-2 py-1 rounded-lg hover:bg-neutral-800 transition"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-
-              {/* Titolo */}
-              <h2 className="text-white text-xl font-bold">
-                {selectedImage.title}
-              </h2>
-
-              {/* Caption */}
-              {selectedImage.caption && (
-                <p className="text-neutral-300 text-sm leading-relaxed">
-                  {selectedImage.caption}
-                </p>
-              )}
-
-              {/* Source */}
-              {selectedImage.source && (
-                <div className="text-sm">
-                  <span className="text-neutral-500 font-medium uppercase tracking-wider text-xs">
-                    Source
-                  </span>
-                  <a
-                    href={selectedImage.source}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-yellow-400 hover:text-yellow-300 truncate mt-1 transition"
-                  >
-                    {selectedImage.source}
-                  </a>
-                </div>
-              )}
-
-              {/* Divider */}
-              <div className="border-t border-neutral-700" />
-
-              {/* Stats: views + loves */}
-              <div className="flex gap-6 text-sm text-neutral-400">
-                <span>
-                  👁This spark has been seen{" "}
-                  <strong className="text-white">
-                    {selectedImage.views?.toLocaleString()}
-                  </strong>{" "}
-                  times
-                </span>
-                <span>
-                  ✦{" "}
-                  <strong className="text-white">
-                    {loved ? selectedImage.loves + 1 : selectedImage.loves}
-                  </strong>{" "}
-                  are Loving it
-                </span>
-              </div>
-
-              {/* Pulsante I'm loving it */}
-              <button
-                onClick={() => setLoved(!loved)}
-                className={`mt-auto px-6 py-3 rounded-full font-semibold text-sm transition
-                  ${
-                    loved
-                      ? "bg-yellow-400 text-black scale-95"
-                      : "bg-white text-black hover:bg-yellow-400"
-                  }`}
-              >
-                {loved ? "✦ I'm loving it!" : "✦ Love it"}
-              </button>
-            </div>
-          </div>
+          <ImageCard image={image} onSpark={onSpark} />
         </div>
-      )}
-    </>
+      ))}
+    </div>
   );
 }
