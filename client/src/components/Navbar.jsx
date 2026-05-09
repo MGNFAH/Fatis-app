@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-jsx;
 import { useState, useEffect, useRef } from "react";
 import { FaHeart } from "react-icons/fa";
 
@@ -80,7 +79,7 @@ export default function Navbar({ sparkCount }) {
           )}
         </div>
         <span>
-          {sparkCount === 0 ? "Nessuno spark" : `${sparkCount} spark`}
+          {sparkCount === 0 ? "Nessun love" : `${sparkCount} loved `}
         </span>
       </div>
     </nav>

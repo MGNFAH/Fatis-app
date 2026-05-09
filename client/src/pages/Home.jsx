@@ -1,10 +1,9 @@
-
 import MasonryGrid from "../components/MasonryGrid";
 
-export default function Home() {
+export default function Home({ onSpark }) {
   return (
     <main>
-      <MasonryGrid onSpark={() => setSparkCount((c) => c + 1)} />
+      <MasonryGrid onSpark={onSpark} />
     </main>
   );
 }
