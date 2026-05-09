@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaHeart } from "react-icons/fa";
 
 export default function Navbar({ sparkCount }) {
-    const [bump, setBump] = useState(false)
+  const [bump, setBump] = useState(false)
   const prevCount = useRef(sparkCount)
 
   useEffect(() => {
@@ -13,12 +13,12 @@ export default function Navbar({ sparkCount }) {
       prevCount.current = sparkCount
     }
   }, [sparkCount])
+
   return (
     <nav className="flex items-center justify-between px-6 py-3 bg-black text-white">
-      {/* SINISTRA — Logo + link */}
+      {/* SINISTRA — Logo + link + spark counter */}
       <div className="flex items-center gap-3">
         <Link to="/" className="bg-white rounded-full p-2">
-          {/* Logo — sostituisci con il tuo */}
           <div className="w-6 h-6 bg-black rounded-full"></div>
         </Link>
         <div className="flex items-center gap-1 bg-neutral-800 rounded-full px-4 py-2">
@@ -29,6 +29,35 @@ export default function Navbar({ sparkCount }) {
           <Link to="#" className="text-neutral-400 text-sm">
             Careers
           </Link>
+          <span className="text-neutral-500 text-sm px-1">|</span>
+
+          {/* Spark counter — inline nella pill */}
+          <div className="flex items-center gap-1.5">
+            <div className="relative flex items-center">
+              <FaHeart
+                className={`text-[#E8000D] text-sm`}
+                style={{
+                  transform: bump ? 'scale(1.5)' : 'scale(1)',
+                  transition: 'transform 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97)',
+                }}
+              />
+              {sparkCount > 0 && (
+                <span
+                  className="absolute -top-2 -right-2 bg-[#E8000D] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
+                  style={{
+                    transform: bump ? 'scale(1.25)' : 'scale(1)',
+                    transition: 'transform 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97)',
+                  }}
+                >
+                  {sparkCount}
+                </span>
+              )}
+            </div>
+            <span className="text-neutral-400 text-sm">
+              {sparkCount === 0 ? 'Nessun love' : `${sparkCount} loved`}
+            </span>
+          </div>
+
         </div>
       </div>
 
@@ -55,32 +84,6 @@ export default function Navbar({ sparkCount }) {
         >
           Sign up
         </Link>
-      </div>
-      {/* Spark counter */}
-      <div className="flex items-center gap-2 text-neutral-300 text-sm">
-        <div className="relative">
-          <FaHeart
-            className={`text-[#E8000D] text-lg transition-transform ${bump ? "scale-150" : "scale-100"}`}
-            style={{
-              transition: "transform 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97)",
-            }}
-          />
-          {sparkCount > 0 && (
-            <span
-              className={`absolute -top-2 -right-2 bg-[#E8000D] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center
-                ${bump ? "scale-125" : "scale-100"}`}
-              style={{
-                transition:
-                  "transform 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97)",
-              }}
-            >
-              {sparkCount}
-            </span>
-          )}
-        </div>
-        <span>
-          {sparkCount === 0 ? "Nessun love" : `${sparkCount} loved `}
-        </span>
       </div>
     </nav>
   );
