@@ -1,22 +1,18 @@
 import { Link } from "react-router";
 import { useState, useEffect, useRef } from "react";
-import { FaHeart, FaFire } from "react-icons/fa";
+import { FaFire } from "react-icons/fa";
 import LoveGauge from "./LoveGauge";
 import SearchBar from "./SearchBar";
 
-export default function Navbar({ sparkCount }) {
-  const [bump, setBump] = useState(false);
+export default function Navbar({ sparkCount, onSelectImage }) {
+  // ← aggiunto onSelectImage
   const [streakBump, setStreakBump] = useState(false);
   const prevCount = useRef(sparkCount);
-
-  // Streak — per ora valore fisso demo, poi verrà dal backend
   const streakDays = 3;
 
   useEffect(() => {
     if (sparkCount > prevCount.current) {
-      setBump(true);
       setStreakBump(true);
-      setTimeout(() => setBump(false), 400);
       setTimeout(() => setStreakBump(false), 600);
       prevCount.current = sparkCount;
     }
@@ -49,8 +45,9 @@ export default function Navbar({ sparkCount }) {
           </Link>
           <span className="text-white/30 text-sm px-1">|</span>
 
-          {/* ❤️ Spark counter */}
           <LoveGauge sparkCount={sparkCount} />
+
+          <span className="text-white/30 text-sm px-1">|</span>
 
           {/* 🔥 Streak */}
           <div className="flex items-center gap-1">
@@ -75,10 +72,9 @@ export default function Navbar({ sparkCount }) {
           </div>
         </div>
       </div>
-
       {/* CENTRO — Search */}
-      <SearchBar onSelectImage={onSelectImage} />
-
+      <SearchBar onSelectImage={onSelectImage} />{" "}
+      {/* ← ora onSelectImage esiste */}
       {/* DESTRA — Auth */}
       <div className="flex items-center gap-3">
         <button className="text-white/40 hover:text-white transition">
