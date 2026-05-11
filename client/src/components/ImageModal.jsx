@@ -12,6 +12,8 @@ import {
   FaPaperPlane,
   FaFire,
 } from "react-icons/fa";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router";
 
 // ─── Mini card per opere correlate ───────────────────────────────────────
 function MiniCard({ img, onClick }) {
@@ -75,6 +77,8 @@ export default function ImageModal({ image, onClose, allImages = [] }) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState(image.comments || []);
   const [current, setCurrent] = useState(image);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleSelect = (img) => {
     setCurrent(img);
@@ -271,7 +275,13 @@ export default function ImageModal({ image, onClose, allImages = [] }) {
 
             <div className="flex gap-3">
               <button
-                onClick={() => setLoved(!loved)}
+                onClick={() => {
+                  if (!user) {
+                    navigate("/login");
+                    return;
+                  }
+                  setLoved(!loved);
+                }}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full font-semibold text-sm
                   ${loved ? "bg-[#E8000D] text-white" : "bg-white text-[#E8000D] hover:bg-[#E8000D] hover:text-white"}`}
                 style={{
@@ -292,7 +302,13 @@ export default function ImageModal({ image, onClose, allImages = [] }) {
               </button>
 
               <button
-                onClick={() => setSaved(!saved)}
+                onClick={() => {
+                  if (!user) {
+                    navigate("/login");
+                    return;
+                  }
+                  setSaved(!saved);
+                }}
                 className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-full font-semibold text-sm
                   ${
                     saved

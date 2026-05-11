@@ -1,6 +1,9 @@
 import { useState, useRef, forwardRef, useImperativeHandle } from "react";
 import { FaHeart, FaEye } from "react-icons/fa";
 import { useHeartSound } from "../hooks/useHeartSound";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router";
+
 
 function LevelBadge({ level }) {
   return (
@@ -70,6 +73,8 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
   const [viewBouncing, setViewBouncing] = useState(false);
   const { playLove, playUnlove } = useHeartSound();
   const sparkedRef = useRef(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const localLoves = sparked ? image.loves + 1 : image.loves;
   const localLovers = sparked ? ["tu", ...(image.lovers || [])] : image.lovers || [];
@@ -77,18 +82,26 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
 
   const handleLove = (e) => {
     e?.stopPropagation();
-    if (!sparkedRef.current) {
-      setAnimating(true); setTimeout(() => setAnimating(false), 400);
-      setGlowing(true);   setTimeout(() => setGlowing(false), 700);
-      setBouncing(true);  setTimeout(() => setBouncing(false), 500);
-      onSpark?.();
-      playLove();
-    } else {
-      playUnlove();
+    if (!user) {
+      navigate("/login");
+      return;
+    } 
+      if (!sparkedRef.current) {
+        setAnimating(true);
+        setTimeout(() => setAnimating(false), 400);
+        setGlowing(true);
+        setTimeout(() => setGlowing(false), 700);
+        setBouncing(true);
+        setTimeout(() => setBouncing(false), 500);
+        onSpark?.();
+        playLove();
+      } else {
+        playUnlove();
+      }
+      sparkedRef.current = !sparkedRef.current;
+      setSparked(sparkedRef.current);
     }
-    sparkedRef.current = !sparkedRef.current;
-    setSparked(sparkedRef.current);
-  };
+  ;
 
   // Espone handleLove a MasonryGrid tramite ref
   useImperativeHandle(ref, () => ({ triggerLove: handleLove }));
