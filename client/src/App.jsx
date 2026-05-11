@@ -7,7 +7,7 @@ import CategoryBar from "./components/CategoryBar";
 import ImageModal from "./components/ImageModal";
 import { BrowserRouter, Routes, Route } from "react-router";
 import { useState } from "react";
-
+import { fakeImages } from "./data/placeholderImages";
 function App() {
   const [sparkCount, setSparkCount] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -36,7 +36,7 @@ function App() {
         <ImageModal
           image={selectedImage}
           onClose={() => setSelectedImage(null)}
-          allImages={images}
+          allImages={fakeImages} // ← era "images", ora "placeholderImages"
         />
       )}
     </BrowserRouter>
