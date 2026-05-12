@@ -277,7 +277,8 @@ export default function ImageModal({ image, onClose, allImages = [] }) {
               <button
                 onClick={() => {
                   if (!user) {
-                    navigate("/login");
+                      onClose();   
+                      navigate("/login");
                     return;
                   }
                   setLoved(!loved);
@@ -304,6 +305,7 @@ export default function ImageModal({ image, onClose, allImages = [] }) {
               <button
                 onClick={() => {
                   if (!user) {
+                     onClose();   
                     navigate("/login");
                     return;
                   }
