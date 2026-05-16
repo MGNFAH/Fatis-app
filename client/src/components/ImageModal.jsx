@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FaHeart,
   FaEye,
@@ -17,33 +17,54 @@ import { useNavigate } from "react-router";
 
 // ─── Mini card per opere correlate ───────────────────────────────────────
 function MiniCard({ img, onClick }) {
-  return (
-    <button
-      onClick={() => onClick(img)}
-      className="group relative overflow-hidden rounded-xl flex-shrink-0"
-      style={{ width: 130, height: 100 }}
+ const [imgError, setImgError] = useState(false);
+
+ useEffect(() => {
+  setImgError(false);
+ }, [img.url]);
+
+ return (
+  <button
+   onClick={() => onClick(img)}
+   className="group relative overflow-hidden rounded-xl flex-shrink-0"
+   style={{ width: 130, height: 100 }}
+  >
+   {imgError ? (
+    <div
+     className="w-full h-full rounded-xl flex flex-col items-center justify-center"
+     style={{
+      background: "rgba(255,255,255,0.03)",
+      border: "1px solid rgba(255,255,255,0.06)",
+     }}
     >
-      <img
-        src={img.url}
-        alt={img.title}
-        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-      />
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-        style={{ background: "rgba(0,0,0,0.45)" }}
-      />
-      <p
-        className="absolute bottom-0 left-0 right-0 px-2 py-1.5 text-white text-xs font-semibold
-          translate-y-full group-hover:translate-y-0 transition-transform duration-200"
-        style={{
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)",
-        }}
-      >
-        {img.title}
-      </p>
-    </button>
-  );
+     <p className="text-neutral-500 text-[10px] text-center px-1 leading-tight">Img errata</p>
+    </div>
+   ) : (
+    <>
+     <img
+      src={img.url}
+      alt={img.title}
+      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+      onError={() => setImgError(true)}
+      onLoad={() => setImgError(false)}
+     />
+     <div
+      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+      style={{ background: "rgba(0,0,0,0.45)" }}
+     />
+     <p
+      className="absolute bottom-0 left-0 right-0 px-2 py-1.5 text-white text-xs font-semibold
+      translate-y-full group-hover:translate-y-0 transition-transform duration-200"
+      style={{
+       background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)",
+      }}
+     >
+      {img.title}
+     </p>
+    </>
+   )}
+  </button>
+ );
 }
 
 // ─── Sezione scroll orizzontale ──────────────────────────────────────────
