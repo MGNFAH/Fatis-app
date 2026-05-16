@@ -1,5 +1,4 @@
-import { useState, useRef, forwardRef, useImperativeHandle } from "react";
-import { FaHeart, FaEye } from "react-icons/fa";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react"; import { FaHeart, FaEye } from "react-icons/fa";
 import { useHeartSound } from "../hooks/useHeartSound";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router";
@@ -75,10 +74,14 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
   const sparkedRef = useRef(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-
+  const [imgError, setImgError] = useState(false);
   const localLoves = sparked ? image.loves + 1 : image.loves;
   const localLovers = sparked ? ["tu", ...(image.lovers || [])] : image.lovers || [];
   const localViews = viewed ? image.views + 1 : image.views;
+
+  useEffect(() => {
+    setImgError(false);
+  }, [image.url]);
 
   const handleLove = (e) => {
     e?.stopPropagation();
@@ -124,7 +127,7 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
         }
       }}
     >
-      <img
+       <img
         src={image.url}
         alt={image.title}
         className="w-full object-cover"
