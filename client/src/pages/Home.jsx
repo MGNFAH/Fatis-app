@@ -5,13 +5,28 @@ import MasonryGrid from "../components/MasonryGrid";
 import CreateSparkModal from "../components/CreateSparkModal";
 import { useAuth } from "../hooks/useAuth";
 import { fakeImages } from "../data/placeholderImages";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router";
 
-export default function Home({ onSpark, onSelectImage }) {
+export default function Home({ onSpark, onSelectImage, allImages = [] }) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const [images, setImages] = useState(fakeImages);
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+ const [searchParams, setSearchParams] = useSearchParams();
+
+ useEffect(() => {
+   const sparkId = searchParams.get("spark");
+   if (sparkId && images?.length) {
+     const spark = images.find((img) => img.id === sparkId);
+     if (spark) {
+       onSelectImage(spark);
+       setSearchParams({}); // pulisce l'URL dopo l'apertura
+     }
+   }
+ }, []);
 
   const handleFAB = () => {
     if (!user) {

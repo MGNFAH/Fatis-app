@@ -53,8 +53,16 @@ const [form, setForm] = useState({
     setImageFile(null);
     setRemotePreviewError(false);
     setErrors((prev) => ({ ...prev, image: "" }));
-  };
 
+    // Estrai automaticamente la pagina sorgente dall'URL esterno
+    try {
+      const urlObj = new URL(value.trim());
+      const origin = urlObj.protocol + "//" + urlObj.host;
+      setForm((prev) => ({ ...prev, sourcePageUrl: origin }));
+    } catch {
+      // URL non valido, sourcePageUrl resta vuoto
+    }
+  };
   const handleDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
@@ -112,7 +120,7 @@ const validate = () => {
     // Simula un piccolo delay come se caricasse sul server
     setTimeout(() => {
     onPublish({
-      id: Date.now(),
+      id: crypto.randomUUID(),
       url: imageMode === "hotlink" ? form.imageUrl.trim() : preview,
       imageMode,
       imageUrl: imageMode === "hotlink" ? form.imageUrl.trim() : "",
@@ -192,7 +200,7 @@ const validate = () => {
               URL immagine
             </button>
           </div>
-          
+
           {imageMode === "upload" ? (
             preview ? (
               <div className="relative w-full h-full flex items-center justify-center">

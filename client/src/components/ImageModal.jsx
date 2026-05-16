@@ -255,8 +255,8 @@ const handleSelect = (img) => {
                     <div className="absolute right-0 mt-1 w-52 bg-neutral-800 rounded-xl shadow-xl z-10 overflow-hidden text-sm">
                       <button
                         onClick={() => {
-                          const urlToShare = window.location.origin + "/spark/" + current.id;
-                          navigator.clipboard.writeText(urlToShare);
+                         const urlToShare = `${window.location.origin}?spark=${current.id}`;
+                         navigator.clipboard.writeText(urlToShare);
                           setMenuOpen(false);
                         }}
                         className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-white transition flex items-center gap-2"

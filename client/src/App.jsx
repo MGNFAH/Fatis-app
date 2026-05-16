@@ -26,6 +26,7 @@ function App() {
               <Home
                 onSpark={() => setSparkCount((c) => c + 1)}
                 onSelectImage={setSelectedImage}
+                allImages={fakeImages}
               />
             }
           />
