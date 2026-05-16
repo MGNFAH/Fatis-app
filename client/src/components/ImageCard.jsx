@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef, useImperativeHandle } from "react"; import { FaHeart, FaEye } from "react-icons/fa";
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react"; import { FaHeart, FaEye } from "react-icons/fa";
 import { useHeartSound } from "../hooks/useHeartSound";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router";
