@@ -176,20 +176,7 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
           onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
         />
       )}
-      <img
-        src={image.url}
-        alt={image.title}
-        className="w-full object-cover"
-        loading="lazy"
-        style={{
-          transition: "transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-          pointerEvents: "none",
-        }}
-        onError={() => setImgError(true)}
-        onLoad={() => setImgError(false)}
-        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-      />
+      
 
       {image.loves >= 1000 && (
         <div
