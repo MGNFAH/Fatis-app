@@ -153,6 +153,46 @@ const validate = () => {
           className="md:w-2/5 bg-neutral-950 flex flex-col items-center justify-center p-6 flex-shrink-0"
           style={{ minHeight: 300 }}
         >
+          <div className="w-full flex gap-2 mb-4">
+            <button
+              type="button"
+              onClick={() => {
+                setImageMode("upload");
+                setForm((prev) => ({ ...prev, imageUrl: "" }));
+                setPreview(imageFile ? preview : null);
+                setRemotePreviewError(false);
+              }}
+              className="flex-1 py-2 rounded-xl text-sm font-semibold transition"
+              style={{
+                background:
+                  imageMode === "upload" ? "#E8000D" : "rgba(255,255,255,0.06)",
+                color: "white",
+              }}
+            >
+              Upload
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setImageMode("hotlink");
+                setImageFile(null);
+                setPreview(form.imageUrl.trim() || null);
+                setRemotePreviewError(false);
+              }}
+              className="flex-1 py-2 rounded-xl text-sm font-semibold transition"
+              style={{
+                background:
+                  imageMode === "hotlink"
+                    ? "#E8000D"
+                    : "rgba(255,255,255,0.06)",
+                color: "white",
+              }}
+            >
+              URL immagine
+            </button>
+          </div>
+          
           {imageMode === "upload" ? (
             preview ? (
               <div className="relative w-full h-full flex items-center justify-center">
@@ -261,45 +301,6 @@ const validate = () => {
             </div>
           )}
 
-          <div className="w-full flex gap-2 mb-4">
-            <button
-              type="button"
-              onClick={() => {
-                setImageMode("upload");
-                setForm((prev) => ({ ...prev, imageUrl: "" }));
-                setPreview(imageFile ? preview : null);
-                setRemotePreviewError(false);
-              }}
-              className="flex-1 py-2 rounded-xl text-sm font-semibold transition"
-              style={{
-                background:
-                  imageMode === "upload" ? "#E8000D" : "rgba(255,255,255,0.06)",
-                color: "white",
-              }}
-            >
-              Upload
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setImageMode("hotlink");
-                setImageFile(null);
-                setPreview(form.imageUrl.trim() || null);
-                setRemotePreviewError(false);
-              }}
-              className="flex-1 py-2 rounded-xl text-sm font-semibold transition"
-              style={{
-                background:
-                  imageMode === "hotlink"
-                    ? "#E8000D"
-                    : "rgba(255,255,255,0.06)",
-                color: "white",
-              }}
-            >
-              URL immagine
-            </button>
-          </div>
           <input
             ref={fileInputRef}
             type="file"
@@ -479,8 +480,10 @@ const validate = () => {
               </label>
               <input
                 type="url"
-                value={form.source}
-                onChange={(e) => setForm({ ...form, source: e.target.value })}
+                value={form.sourcePageUrl}
+                onChange={(e) =>
+                  setForm({ ...form, sourcePageUrl: e.target.value })
+                }
                 placeholder="https://..."
                 className={inputClass}
                 style={inputStyle}

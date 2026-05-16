@@ -127,7 +127,56 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
         }
       }}
     >
-       <img
+      {imgError && (
+        <div
+          className="w-full rounded-lg flex flex-col items-center justify-center text-center px-4 py-10"
+          style={{
+            minHeight: 220,
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          <div
+            className="mb-3 rounded-full flex items-center justify-center"
+            style={{
+              width: 42,
+              height: 42,
+              background: "rgba(232,0,13,0.12)",
+              color: "#E8000D",
+              fontSize: 18,
+              fontWeight: 700,
+            }}
+          >
+            !
+          </div>
+          <p className="text-white text-sm font-semibold">
+            Immagine non disponibile
+          </p>
+          <p className="text-neutral-500 text-xs mt-1 leading-relaxed">
+            Il sito potrebbe bloccare l'hotlinking.
+          </p>
+        </div>
+      )}
+
+      {!imgError && (
+        <img
+          src={image.url}
+          alt={image.title}
+          className="w-full object-cover"
+          loading="lazy"
+          onError={() => setImgError(true)}
+          onLoad={() => setImgError(false)}
+          style={{
+            transition: "transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            pointerEvents: "none",
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.transform = "scale(1.04)")
+          }
+          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        />
+      )}
+      <img
         src={image.url}
         alt={image.title}
         className="w-full object-cover"
@@ -136,6 +185,8 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
           transition: "transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
           pointerEvents: "none",
         }}
+        onError={() => setImgError(true)}
+        onLoad={() => setImgError(false)}
         onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
         onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
       />
