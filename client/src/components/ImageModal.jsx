@@ -92,28 +92,27 @@ function HorizontalScroll({ title, icon, items, onSelect }) {
 
 // ─── Componente principale ───────────────────────────────────────────────
 export default function ImageModal({ image, onClose, allImages = [] }) {
-  const [loved, setLoved] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [comment, setComment] = useState("");
-  useEffect(() => {
- setMainImgError(false);
-}, [current.url]);
-  const [mainImgError, setMainImgError] = useState(false);
-  const [comments, setComments] = useState(image.comments || []);
-  const [current, setCurrent] = useState(image);
-  const { user } = useAuth();
-  const navigate = useNavigate();
+const [loved, setLoved] = useState(false);
+const [menuOpen, setMenuOpen] = useState(false);
+const [saved, setSaved] = useState(false);
+const [comment, setComment] = useState("");
+const [mainImgError, setMainImgError] = useState(false);
+const [comments, setComments] = useState(image.comments || []);
+const [current, setCurrent] = useState(image);
+const { user } = useAuth();
+const navigate = useNavigate();
+
 useEffect(() => {
- setMainImgError(false);
+  setMainImgError(false);
 }, [current.url]);
-  const handleSelect = (img) => {
-    setCurrent(img);
-    setLoved(false);
-    setSaved(false);
-    setComments(img.comments || []);
-    setComment("");
-  };
+
+const handleSelect = (img) => {
+  setCurrent(img);
+  setLoved(false);
+  setSaved(false);
+  setComments(img.comments || []);
+  setComment("");
+};
 
   const authorWorks = allImages.filter(
     (img) => img.author === current.author && img.id !== current.id,
@@ -144,68 +143,70 @@ useEffect(() => {
         style={{ maxWidth: "min(1200px, 96vw)", maxHeight: "94vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ── Immagine sinistra ── */}<div
- className="bg-black flex items-center justify-center flex-shrink-0 relative"
- style={{ width: "min(55%, 660px)", minHeight: 400 }}
->
- {mainImgError ? (
-  <div
-   className="w-full h-full flex flex-col items-center justify-center px-6 py-10 text-center"
-   style={{ minHeight: 400 }}
-  >
-   <div
-    className="mb-4 rounded-full flex items-center justify-center"
-    style={{
-     width: 64,
-     height: 64,
-     background: "rgba(232,0,13,0.12)",
-     color: "#E8000D",
-     fontSize: 26,
-     fontWeight: 700,
-    }}
-   >
-    !
-   </div>
-   <p className="text-white text-lg font-bold">
-    Immagine non disponibile
-   </p>
-   <p className="text-neutral-500 text-sm mt-2 leading-relaxed max-w-sm">
-    Il sito potrebbe bloccare l&apos;hotlinking o l&apos;URL dell&apos;immagine non è più valido.
-   </p>
-   {current.sourcePageUrl && (
-    <a
-     href={current.sourcePageUrl}
-     target="_blank"
-     rel="noopener noreferrer"
-     className="mt-4 flex items-center gap-2 text-sm"
-     style={{ color: "#E8000D" }}
-    >
-     Apri pagina sorgente<span className="text-[#E8000D]">→</span>
-    </a>
-   )}
-   <button
-    onClick={() => setMainImgError(false)}
-    className="mt-4 px-4 py-2 rounded-lg text-sm font-semibold"
-    style={{
-     background: "rgba(255,255,255,0.08)",
-     color: "white",
-     transition: "all 200ms ease",
-    }}
-   >
-    Riprova
-   </button>
-  </div>
- ) : (
-  <img
-   src={current.url}
-   alt={current.title}
-   className="w-full h-full object-contain"
-   style={{ maxHeight: "94vh" }}
-   onError={() => setMainImgError(true)}
-   onLoad={() => setMainImgError(false)}
-  />
- )}
-</div>
+        {/* ── Immagine sinistra ── */}
+        <div
+          className="bg-black flex items-center justify-center flex-shrink-0 relative"
+          style={{ width: "min(55%, 660px)", minHeight: 400 }}
+        >
+          {mainImgError ? (
+            <div
+              className="w-full h-full flex flex-col items-center justify-center px-6 py-10 text-center"
+              style={{ minHeight: 400 }}
+            >
+              <div
+                className="mb-4 rounded-full flex items-center justify-center"
+                style={{
+                  width: 64,
+                  height: 64,
+                  background: "rgba(232,0,13,0.12)",
+                  color: "#E8000D",
+                  fontSize: 26,
+                  fontWeight: 700,
+                }}
+              >
+                !
+              </div>
+              <p className="text-white text-lg font-bold">
+                Immagine non disponibile
+              </p>
+              <p className="text-neutral-500 text-sm mt-2 leading-relaxed max-w-sm">
+                Il sito potrebbe bloccare l&apos;hotlinking o l&apos;URL
+                dell&apos;immagine non è più valido.
+              </p>
+              {current.sourcePageUrl && (
+                <a
+                  href={current.sourcePageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 flex items-center gap-2 text-sm"
+                  style={{ color: "#E8000D" }}
+                >
+                  Apri pagina sorgente<span className="text-[#E8000D]">→</span>
+                </a>
+              )}
+              <button
+                onClick={() => setMainImgError(false)}
+                className="mt-4 px-4 py-2 rounded-lg text-sm font-semibold"
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  color: "white",
+                  transition: "all 200ms ease",
+                }}
+              >
+                Riprova
+              </button>
+            </div>
+          ) : (
+            <img
+              src={current.url}
+              alt={current.title}
+              className="w-full h-full object-contain"
+              style={{ maxHeight: "94vh" }}
+              onError={() => setMainImgError(true)}
+              onLoad={() => setMainImgError(false)}
+            />
+          )}
+        </div>
 
         {/* ── Pannello destra ── */}
         <div
@@ -254,7 +255,8 @@ useEffect(() => {
                     <div className="absolute right-0 mt-1 w-52 bg-neutral-800 rounded-xl shadow-xl z-10 overflow-hidden text-sm">
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText(current.source);
+                          const urlToShare = window.location.origin + "/spark/" + current.id;
+                          navigator.clipboard.writeText(urlToShare);
                           setMenuOpen(false);
                         }}
                         className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-white transition flex items-center gap-2"
@@ -314,19 +316,19 @@ useEffect(() => {
               </div>
             )}
 
-            {current.source && (
+            {(current.sourcePageUrl || current.source) && (
               <div className="text-sm">
                 <span className="text-neutral-500 font-medium uppercase tracking-wider text-xs">
                   Source
                 </span>
                 <a
-                  href={current.source}
+                  href={current.sourcePageUrl || current.source}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-yellow-400 hover:text-yellow-300 truncate mt-1 transition"
                 >
                   <FaLink size={10} />
-                  {current.source}
+                  {current.sourcePageUrl || current.source}
                 </a>
               </div>
             )}
@@ -354,8 +356,8 @@ useEffect(() => {
               <button
                 onClick={() => {
                   if (!user) {
-                      onClose();   
-                      navigate("/login");
+                    onClose();
+                    navigate("/login");
                     return;
                   }
                   setLoved(!loved);
@@ -382,7 +384,7 @@ useEffect(() => {
               <button
                 onClick={() => {
                   if (!user) {
-                     onClose();   
+                    onClose();
                     navigate("/login");
                     return;
                   }
