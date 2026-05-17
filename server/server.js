@@ -3,25 +3,35 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const { connectDB, sequelize } = require("./config/db");
-  require("./models/Item");
 
- 
-// Connect to database
- connectDB().then(() => sequelize.sync());
- const app = express();
+// Importa tutti i models per registrarli
+require("./models/user");
+require("./models/spark");
+require("./models/collection");
+require("./models/userlove");
+require("./models/collectionsparks");
 
+const app = express();
 
 // Middleware
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Test route
-app.get("/api/test", (req, res) => {
-  res.json({ message: "Backend is working!" });
-});
+// Routes
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
 
+// Route di test
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Backend Fatis funzionante!" });
+});
+// Connessione DB e avvio server
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+connectDB().then(() => {
+  sequelize.sync({ alter: true }).then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server Fatis running on port ${PORT}`);
+    });
+  });
 });
