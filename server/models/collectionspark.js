@@ -18,4 +18,4 @@ const CollectionSpark = sequelize.define(
   },
 );
 
-module.exports = CollectionSpark;
+module.exports = CollectionSpark; 
