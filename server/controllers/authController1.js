@@ -28,10 +28,12 @@ const register = async (req, res) => {
       { expiresIn: "7d" },
     );
 
-    res.status(201).json({
-      token,
-      user: { id: user.id, username: user.username, email: user.email },
-    });
+    res
+      .status(201)
+      .json({
+        token,
+        user: { id: user.id, username: user.username, email: user.email },
+      });
   } catch (error) {
     res.status(500).json({ error: "Errore nella registrazione" });
   }
