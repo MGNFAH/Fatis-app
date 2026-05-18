@@ -8,7 +8,7 @@ const {
   deleteCollection,
   addSparkToCollection,
   removeSparkFromCollection,
-} = require("../controllers/collectionController2");
+} = require("../controllers/collectionController");
 const authMiddleware = require("../middleware/authmid");
 
 router.use(authMiddleware);
