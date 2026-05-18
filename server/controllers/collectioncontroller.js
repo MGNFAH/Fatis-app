@@ -1,5 +1,5 @@
 const Collection = require("../models/Collection");
-const CollectionSpark = require("../models/CollectionSpark");
+const CollectionSpark = require("../models/collectionSpark");
 const Spark = require("../models/Spark");
 
 // READ - Tutte le collezioni dell'utente loggato

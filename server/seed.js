@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { sequelize } = require("./config/db");
-const Item = require("./models/Item");
+const Item = require("./models/Spark");
 
 const sampleItems = [
   { name: "First Item", description: "First item in our collection" },

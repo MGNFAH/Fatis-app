@@ -5,11 +5,11 @@ const helmet = require("helmet");
 const { connectDB, sequelize } = require("./config/db");
 
 // Importa tutti i models per registrarli
-require("./models/user");
-require("./models/spark");
-require("./models/collection");
-require("./models/userlove");
-require("./models/collectionspark");
+require("./models/User");
+require("./models/Spark");
+require("./models/Collection");
+require("./models/userLove");
+require("./models/collectionSpark");
 
 const app = express();
 
