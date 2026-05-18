@@ -9,7 +9,7 @@ const {
   addLove,
   removeLove,
   getLovedSparks,
-} = require("../controllers/sparkController3");
+} = require("../controllers/sparkController");
 const authMiddleware = require("../middleware/authmid");
 
 router.use(authMiddleware);
