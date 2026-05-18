@@ -9,7 +9,7 @@ require("./models/user");
 require("./models/spark");
 require("./models/collection");
 require("./models/userlove");
-require("./models/collectionsparks");
+require("./models/collectionspark");
 
 const app = express();
 
@@ -26,6 +26,13 @@ app.use("/api/auth", authRoutes);
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend Fatis funzionante!" });
 });
+
+const sparkRoutes = require("./routes/sparks");
+const collectionRoutes = require("./routes/collections");
+app.use("/api/sparks", sparkRoutes);
+app.use("/api/collections", collectionRoutes);
+
+
 // Connessione DB e avvio server
 const PORT = process.env.PORT || 3001;
 connectDB().then(() => {
