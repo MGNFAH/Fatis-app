@@ -4,9 +4,8 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
 });
 
-// Interceptor: aggiunge il token JWT su ogni richiesta
 api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem("token"); // ← localStorage
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
