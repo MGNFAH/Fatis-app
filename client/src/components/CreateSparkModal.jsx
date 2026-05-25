@@ -6,6 +6,7 @@ import {
   FaPlus,
   FaFire,
 } from "react-icons/fa";
+import api from "../api";
 
 const CATEGORIES = [
   "Pittura ad olio",
@@ -108,36 +109,39 @@ const validate = () => {
   return newErrors;
 };
   // ── Submit ─────────────────────────────────────────────────
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+ const handleSubmit = async (e) => {
+   e.preventDefault();
+   const newErrors = validate();
+   if (Object.keys(newErrors).length > 0) {
+     setErrors(newErrors);
+     return;
+   }
 
-    setIsLoading(true);
-    // Simula un piccolo delay come se caricasse sul server
-    setTimeout(() => {
-    onPublish({
-      id: crypto.randomUUID(),
-      url: imageMode === "hotlink" ? form.imageUrl.trim() : preview,
-      imageMode,
-      imageUrl: imageMode === "hotlink" ? form.imageUrl.trim() : "",
-      localPreviewUrl: imageMode === "upload" ? preview : "",
-      title: form.title.trim(),
-      caption: form.caption.trim(),
-      sourcePageUrl: form.sourcePageUrl.trim(),
-      category: form.category,
-      tags,
-      loves: 0,
-      views: 0,
-      trending: false,
-    });
-      setIsLoading(false);
-      onClose();
-    }, 800);
-  };
+   setIsLoading(true);
+   try {
+     const imageUrl = imageMode === "hotlink" ? form.imageUrl.trim() : preview;
+
+     const res = await api.post("/api/sparks", {
+       imageUrl,
+       source: form.sourcePageUrl.trim(),
+       title: form.title.trim(),
+       caption: form.caption.trim(),
+       category: form.category,
+       tags,
+     });
+
+     // Passa lo spark reale (con id dal DB) alla Home
+     onPublish(res.data);
+     onClose();
+   } catch (err) {
+     setErrors({
+       general:
+         err.response?.data?.error || "Errore nella pubblicazione. Riprova.",
+     });
+   } finally {
+     setIsLoading(false);
+   }
+ };
 
   // ── Stili input condivisi ──────────────────────────────────
   const inputClass =
@@ -525,4 +529,18 @@ const validate = () => {
       </div>
     </div>
   );
+  {
+    errors.general && (
+      <p
+        className="text-sm px-4 py-3 rounded-xl mx-6 mb-2"
+        style={{
+          background: "rgba(232,0,13,0.1)",
+          border: "1px solid rgba(232,0,13,0.2)",
+          color: "#ff4d4d",
+        }}
+      >
+        {errors.general}
+      </p>
+    );
+  }
 }

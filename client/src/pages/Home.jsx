@@ -1,32 +1,40 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 import { FaFire } from "react-icons/fa";
 import MasonryGrid from "../components/MasonryGrid";
 import CreateSparkModal from "../components/CreateSparkModal";
 import { useAuth } from "../hooks/useAuth";
-import { fakeImages } from "../data/placeholderImages";
-import { useEffect } from "react";
-import { useSearchParams } from "react-router";
+import api from "../api";
 
-export default function Home({ onSpark, onSelectImage, allImages = [] }) {
+export default function Home({ onSpark, onSelectImage }) {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [images, setImages] = useState(fakeImages);
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
- const [searchParams, setSearchParams] = useSearchParams();
+  // Carica gli spark dal backend al mount
+  useEffect(() => {
+    api
+      .get("/api/sparks")
+      .then((res) => setImages(res.data))
+      .catch((err) => console.error("Errore caricamento spark:", err))
+      .finally(() => setLoading(false));
+  }, []);
 
- useEffect(() => {
-   const sparkId = searchParams.get("spark");
-   if (sparkId && images?.length) {
-     const spark = images.find((img) => img.id === sparkId);
-     if (spark) {
-       onSelectImage(spark);
-       setSearchParams({}); // pulisce l'URL dopo l'apertura
-     }
-   }
- }, []);
+  // Apri spark da URL (es. ?spark=123)
+  useEffect(() => {
+    const sparkId = searchParams.get("spark");
+    if (sparkId && images.length) {
+      const spark = images.find((img) => String(img.id) === sparkId);
+      if (spark) {
+        onSelectImage(spark);
+        setSearchParams({});
+      }
+    }
+  }, [images]);
 
   const handleFAB = () => {
     if (!user) {
@@ -36,29 +44,25 @@ export default function Home({ onSpark, onSelectImage, allImages = [] }) {
     setShowCreateModal(true);
   };
 
+  // Lo spark arriva già dal DB con id reale
   const handlePublish = (newSpark) => {
-    const sparkToInsert = {
-      ...newSpark,
-      author: user?.username || user?.name || "anonymous",
-      avatar: `https://picsum.photos/seed/${user?.username || user?.name || "anonymous"}/64/64`,
-      url: newSpark.url,
-      views: 0,
-      loves: 0,
-      trending: false,
-      comments: [],
-      location: user?.location || "",
-    };
-
-    setImages((prev) => [sparkToInsert, ...prev]);
+    setImages((prev) => [newSpark, ...prev]);
+    if (onSpark) onSpark();
   };
 
   return (
     <main className="relative">
-      <MasonryGrid
-        images={images}
-        onSpark={onSpark}
-        onSelectImage={onSelectImage}
-      />
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <span className="text-white/30 text-sm">Caricamento spark...</span>
+        </div>
+      ) : (
+        <MasonryGrid
+          images={images}
+          onSpark={onSpark}
+          onSelectImage={onSelectImage}
+        />
+      )}
 
       <button
         onClick={handleFAB}
