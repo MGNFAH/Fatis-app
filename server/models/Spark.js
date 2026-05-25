@@ -6,6 +6,18 @@ const Spark = sequelize.define("Spark", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  caption: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  category: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   source: {
     type: DataTypes.STRING,
     allowNull: true,

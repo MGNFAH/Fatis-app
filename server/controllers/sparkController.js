@@ -44,18 +44,20 @@ const getSparkById = async (req, res) => {
 // CREATE - Carica un nuovo spark
 const createSpark = async (req, res) => {
   try {
-    const { imageUrl, source, tags } = req.body;
+    const { imageUrl, source, tags, title, caption, category } = req.body;
 
-    // REGOLA: l'immagine è obbligatoria
     if (!imageUrl) {
       return res.status(400).json({ error: "L'immagine è obbligatoria" });
     }
 
     const spark = await Spark.create({
       imageUrl,
+      title,
+      caption,
+      category,
       source,
       tags: tags || [],
-      userId: req.user.id, // sempre dall'utente loggato, mai dal client
+      userId: req.user.id,
     });
 
     res.status(201).json(spark);
