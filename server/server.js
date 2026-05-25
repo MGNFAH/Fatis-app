@@ -20,18 +20,19 @@ app.use(express.json());
 
 // Routes
 const authRoutes = require("./routes/auth");
+const sparkRoutes = require("./routes/sparks");
+const collectionRoutes = require("./routes/collections");
+const userRoutes = require("./routes/users"); // ← NUOVO
+
 app.use("/api/auth", authRoutes);
+app.use("/api/sparks", sparkRoutes);
+app.use("/api/collections", collectionRoutes);
+app.use("/api/users", userRoutes); // ← NUOVO
 
 // Route di test
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend Fatis funzionante!" });
 });
-
-const sparkRoutes = require("./routes/sparks");
-const collectionRoutes = require("./routes/collections");
-app.use("/api/sparks", sparkRoutes);
-app.use("/api/collections", collectionRoutes);
-
 
 // Connessione DB e avvio server
 const PORT = process.env.PORT || 3001;

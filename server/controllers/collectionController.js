@@ -2,7 +2,7 @@ const Collection = require("../models/Collection");
 const CollectionSpark = require("../models/collectionSpark");
 const Spark = require("../models/Spark");
 
-// READ - Tutte le collezioni dell'utente loggato
+// GET /api/collections — tutte le collezioni dell'utente loggato
 const getMyCollections = async (req, res) => {
   try {
     const collections = await Collection.findAll({
@@ -15,7 +15,7 @@ const getMyCollections = async (req, res) => {
   }
 };
 
-// READ - Singola collezione con tutti i suoi spark
+// GET /api/collections/:id — singola collezione con i suoi spark
 const getCollectionById = async (req, res) => {
   try {
     const collection = await Collection.findByPk(req.params.id);
@@ -24,15 +24,15 @@ const getCollectionById = async (req, res) => {
       return res.status(404).json({ error: "Collezione non trovata" });
     }
 
-    // REGOLA: solo il proprietario può vedere una collezione
-    if (collection.userId !== req.user.id) {
+    // Privata → solo il proprietario la vede
+    // Pubblica → chiunque può vederla
+    if (!collection.isPublic && collection.userId !== req.user.id) {
       return res.status(403).json({ error: "Non autorizzato" });
     }
 
-    // Recupera gli spark collegati
     const collectionSparks = await CollectionSpark.findAll({
       where: { collectionId: collection.id },
-      include: [Spark],
+      include: [{ model: Spark }],
     });
 
     res.json({
@@ -44,12 +44,11 @@ const getCollectionById = async (req, res) => {
   }
 };
 
-// CREATE - Crea una nuova collezione
+// POST /api/collections — crea una nuova collezione
 const createCollection = async (req, res) => {
   try {
-    const { name, description, coverImage } = req.body;
+    const { name, description, coverImage, isPublic } = req.body;
 
-    // REGOLA: il nome è obbligatorio
     if (!name) {
       return res
         .status(400)
@@ -60,6 +59,7 @@ const createCollection = async (req, res) => {
       name,
       description,
       coverImage,
+      isPublic: isPublic !== undefined ? isPublic : true,
       userId: req.user.id,
     });
 
@@ -69,7 +69,7 @@ const createCollection = async (req, res) => {
   }
 };
 
-// UPDATE - Modifica nome/descrizione di una collezione
+// PUT /api/collections/:id — modifica nome/descrizione/visibilità
 const updateCollection = async (req, res) => {
   try {
     const collection = await Collection.findByPk(req.params.id);
@@ -78,7 +78,6 @@ const updateCollection = async (req, res) => {
       return res.status(404).json({ error: "Collezione non trovata" });
     }
 
-    // REGOLA: solo il proprietario può modificarla
     if (collection.userId !== req.user.id) {
       return res.status(403).json({ error: "Non autorizzato" });
     }
@@ -92,7 +91,7 @@ const updateCollection = async (req, res) => {
   }
 };
 
-// DELETE - Elimina una collezione
+// DELETE /api/collections/:id
 const deleteCollection = async (req, res) => {
   try {
     const collection = await Collection.findByPk(req.params.id);
@@ -101,12 +100,10 @@ const deleteCollection = async (req, res) => {
       return res.status(404).json({ error: "Collezione non trovata" });
     }
 
-    // REGOLA: solo il proprietario può eliminarla
     if (collection.userId !== req.user.id) {
       return res.status(403).json({ error: "Non autorizzato" });
     }
 
-    // Elimina prima i collegamenti, poi la collezione
     await CollectionSpark.destroy({ where: { collectionId: collection.id } });
     await collection.destroy();
 
@@ -118,9 +115,7 @@ const deleteCollection = async (req, res) => {
   }
 };
 
-// ---- SPARK DENTRO UNA COLLEZIONE ----
-
-// Aggiungi uno spark a una collezione
+// POST /api/collections/:id/sparks/:sparkId
 const addSparkToCollection = async (req, res) => {
   try {
     const collection = await Collection.findByPk(req.params.id);
@@ -129,7 +124,6 @@ const addSparkToCollection = async (req, res) => {
       return res.status(404).json({ error: "Collezione non trovata" });
     }
 
-    // REGOLA: solo il proprietario può aggiungere spark
     if (collection.userId !== req.user.id) {
       return res.status(403).json({ error: "Non autorizzato" });
     }
@@ -139,7 +133,6 @@ const addSparkToCollection = async (req, res) => {
       return res.status(404).json({ error: "Spark non trovato" });
     }
 
-    // REGOLA: lo spark non può essere aggiunto due volte
     const existing = await CollectionSpark.findOne({
       where: { collectionId: collection.id, sparkId: spark.id },
     });
@@ -154,13 +147,14 @@ const addSparkToCollection = async (req, res) => {
       collectionId: collection.id,
       sparkId: spark.id,
     });
+
     res.status(201).json({ message: "Spark aggiunto alla collezione!" });
   } catch (error) {
     res.status(500).json({ error: "Errore nell'aggiunta dello spark" });
   }
 };
 
-// Rimuovi uno spark da una collezione
+// DELETE /api/collections/:id/sparks/:sparkId
 const removeSparkFromCollection = async (req, res) => {
   try {
     const collection = await Collection.findByPk(req.params.id);
@@ -169,7 +163,6 @@ const removeSparkFromCollection = async (req, res) => {
       return res.status(404).json({ error: "Collezione non trovata" });
     }
 
-    // REGOLA: solo il proprietario può rimuovere spark
     if (collection.userId !== req.user.id) {
       return res.status(403).json({ error: "Non autorizzato" });
     }

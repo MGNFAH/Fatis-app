@@ -10,6 +10,9 @@ import { useState } from "react";
 import { fakeImages } from "./data/placeholderImages";
 import { AuthProvider } from "./hooks/AuthContext";
 import Register from "./pages/Register";
+import Collections from "./pages/Collections";
+
+
 function App() {
   const [sparkCount, setSparkCount] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -18,6 +21,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Navbar sparkCount={sparkCount} onSelectImage={setSelectedImage} />
+        
         <CategoryBar />
         <Routes>
           <Route
@@ -34,6 +38,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/collections" element={<Collections />} /> 
         </Routes>
 
         {/* Modale globale — accessibile da ovunque */}

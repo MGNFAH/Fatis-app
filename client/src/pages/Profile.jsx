@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router";
+import api from "../api";
 
 // Avatar con iniziali come fallback
 function AvatarDisplay({ user, size = "lg" }) {
@@ -55,7 +56,9 @@ export default function Profile() {
   // Campi del form
   const [formName, setFormName] = useState(user?.name || "");
   const [formBio, setFormBio] = useState(user?.bio || "");
-  const [formAvatarPreview, setFormAvatarPreview] = useState(user?.avatar || null);
+  const [formAvatarPreview, setFormAvatarPreview] = useState(
+    user?.avatar || null,
+  );
 
   const fileInputRef = useRef(null);
 
@@ -63,7 +66,9 @@ export default function Profile() {
   if (!user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-white/60">Devi essere loggato per vedere il profilo.</p>
+        <p className="text-white/60">
+          Devi essere loggato per vedere il profilo.
+        </p>
         <button
           onClick={() => navigate("/login")}
           className="btn btn-primary btn-sm"
@@ -87,19 +92,24 @@ export default function Profile() {
     reader.readAsDataURL(file);
   };
 
-  // Salvataggio (per ora aggiorna solo il context locale)
+
+
+  // Sostituisci handleSave
   const handleSave = async () => {
-    setIsSaving(true);
-    setSaveError("");
+    setSaving(true);
     try {
-      // Quando il backend sarà pronto, qui chiameremo:
-      // await api.put("/api/users/me", { name: formName, bio: formBio, avatar: formAvatarPreview });
-      updateProfile({ name: formName, bio: formBio, avatar: formAvatarPreview });
+      const res = await api.put("/api/users/me", {
+        name: formName,
+        bio: formBio,
+        avatar: formAvatarPreview,
+      });
+      // Aggiorna il contesto globale con i dati reali dal server
+      updateProfile(res.data);
       setIsEditing(false);
     } catch (err) {
-      setSaveError("Errore nel salvataggio. Riprova.");
+      alert(err.response?.data?.error || "Errore nel salvataggio. Riprova.");
     } finally {
-      setIsSaving(false);
+      setSaving(false);
     }
   };
 
@@ -126,7 +136,6 @@ export default function Profile() {
   return (
     <div className="min-h-screen pt-20 pb-16 px-4">
       <div className="max-w-2xl mx-auto flex flex-col gap-8">
-
         {/* ── HEADER PROFILO ── */}
         <div className="flex flex-col items-center gap-4">
           {/* Avatar con overlay edit */}
@@ -148,9 +157,25 @@ export default function Profile() {
                   className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                   aria-label="Cambia foto profilo"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                 </button>
                 <input
@@ -177,12 +202,16 @@ export default function Profile() {
                 className="input input-bordered input-sm w-full text-center bg-white/5 border-white/10 text-white placeholder-white/30"
                 maxLength={50}
               />
-              <span className="text-white/40 text-sm">@{user.username || user.email?.split("@")[0]}</span>
+              <span className="text-white/40 text-sm">
+                @{user.username || user.email?.split("@")[0]}
+              </span>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-1">
               <h1 className="text-2xl font-bold text-white">{user.name}</h1>
-              <span className="text-white/40 text-sm">@{user.username || user.email?.split("@")[0]}</span>
+              <span className="text-white/40 text-sm">
+                @{user.username || user.email?.split("@")[0]}
+              </span>
             </div>
           )}
 
@@ -197,7 +226,9 @@ export default function Profile() {
         {/* ── BIO ── */}
         <div className="bg-white/5 rounded-2xl p-5 flex flex-col gap-3 border border-white/8">
           <div className="flex items-center justify-between">
-            <h2 className="text-white/70 text-xs uppercase tracking-widest font-medium">Bio</h2>
+            <h2 className="text-white/70 text-xs uppercase tracking-widest font-medium">
+              Bio
+            </h2>
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
@@ -227,16 +258,31 @@ export default function Profile() {
             </p>
           )}
           {isEditing && (
-            <span className="text-white/25 text-xs text-right">{formBio.length}/300</span>
+            <span className="text-white/25 text-xs text-right">
+              {formBio.length}/300
+            </span>
           )}
         </div>
 
         {/* ── INFO ACCOUNT ── */}
         <div className="bg-white/5 rounded-2xl p-5 flex flex-col gap-3 border border-white/8">
-          <h2 className="text-white/70 text-xs uppercase tracking-widest font-medium">Account</h2>
+          <h2 className="text-white/70 text-xs uppercase tracking-widest font-medium">
+            Account
+          </h2>
           <div className="flex items-center gap-3 text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4 text-white/30"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
             </svg>
             <span className="text-white/50">{user.email}</span>
           </div>
@@ -276,7 +322,6 @@ export default function Profile() {
             Esci dall'account
           </button>
         )}
-
       </div>
     </div>
   );

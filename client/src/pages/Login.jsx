@@ -21,7 +21,6 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    // Validazione minima
     if (!form.email || !form.password) {
       setError("Compila tutti i campi.");
       return;
@@ -30,9 +29,11 @@ export default function Login() {
     setIsLoading(true);
     try {
       await login(form.email, form.password);
-      navigate("/"); // redirect alla home dopo login
+      navigate("/");
     } catch (err) {
-      setError("Email o password non corretti.");
+      // Mostra il messaggio specifico del server (es. "Credenziali non valide")
+      // oppure il fallback generico se il server non risponde
+      setError(err.response?.data?.error || "Email o password non corretti.");
     } finally {
       setIsLoading(false);
     }

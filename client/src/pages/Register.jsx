@@ -43,25 +43,30 @@ export default function Register() {
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const newErrors = validate();
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
 
-    setIsLoading(true);
-    try {
-      await register(form.name, form.username, form.email);
-      navigate("/");
-    } catch (err) {
-      setErrors({ general: "Errore durante la registrazione. Riprova." });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  setIsLoading(true);
+  try {
+    // Ora passa anche la password
+    await register(form.name, form.username, form.email, form.password);
+    navigate("/");
+  } catch (err) {
+    // Mostra il messaggio specifico del server (es. "Username già in uso")
+    setErrors({
+      general:
+        err.response?.data?.error ||
+        "Errore durante la registrazione. Riprova.",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
   // Stile input riutilizzabile
   const inputClass =
     "w-full bg-neutral-900 text-white text-sm rounded-xl px-4 py-3 outline-none placeholder-neutral-600 transition";

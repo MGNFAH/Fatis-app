@@ -4,19 +4,25 @@ const User = require("../models/User");
 
 const register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { name, username, email, password } = req.body;
 
     if (!username || !email || !password) {
       return res.status(400).json({ error: "Tutti i campi sono obbligatori" });
     }
 
-    const existing = await User.findOne({ where: { email } });
-    if (existing) {
+    const existingEmail = await User.findOne({ where: { email } });
+    if (existingEmail) {
       return res.status(400).json({ error: "Email già in uso" });
+    }
+
+    const existingUsername = await User.findOne({ where: { username } });
+    if (existingUsername) {
+      return res.status(400).json({ error: "Username già in uso" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
+      name,
       username,
       email,
       password: hashedPassword,
@@ -30,7 +36,14 @@ const register = async (req, res) => {
 
     res.status(201).json({
       token,
-      user: { id: user.id, username: user.username, email: user.email },
+      user: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
+        bio: user.bio,
+      },
     });
   } catch (error) {
     res.status(500).json({ error: "Errore nella registrazione" });
@@ -59,7 +72,14 @@ const login = async (req, res) => {
 
     res.json({
       token,
-      user: { id: user.id, username: user.username, email: user.email },
+      user: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
+        bio: user.bio,
+      },
     });
   } catch (error) {
     res.status(500).json({ error: "Errore nel login" });

@@ -1,49 +1,45 @@
 import { createContext, useContext, useState } from "react";
+import api from "../api";
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // Login fake — da sostituire con chiamata API reale
-  const login = (email, password) => {
-    setUser({
-      email,
-      name: email.split("@")[0],
-      username: email.split("@")[0],
-      bio: "",
-      avatar: null,
-      sparkCount: 0,
-      loveCount: 0,
-      collectionCount: 0,
-    });
+  const login = async (email, password) => {
+    // POST /api/auth/login
+    const res = await api.post("/api/auth/login", { email, password });
+    const { token, user: userData } = res.data;
+    sessionStorage.setItem("token", token);
+    setUser(userData);
   };
 
-  // Register fake — da sostituire con chiamata API reale
-  const register = (name, username, email) => {
-    setUser({
+  const register = async (name, username, email, password) => {
+    // POST /api/auth/register
+    const res = await api.post("/api/auth/register", {
       name,
       username,
       email,
-      bio: "",
-      avatar: null,
-      sparkCount: 0,
-      loveCount: 0,
-      collectionCount: 0,
+      password,
     });
+    const { token, user: userData } = res.data;
+    sessionStorage.setItem("token", token);
+    setUser(userData);
   };
 
-  // Aggiorna solo i campi del profilo (nome, bio, avatar)
   const updateProfile = (updates) => {
     setUser((prev) => ({ ...prev, ...updates }));
   };
 
   const logout = () => {
+    sessionStorage.removeItem("token");
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, updateProfile }}>
+    <AuthContext.Provider
+      value={{ user, login, register, logout, updateProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );
