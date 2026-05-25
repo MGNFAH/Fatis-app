@@ -1,19 +1,41 @@
 import { createContext, useContext, useState } from "react";
 
-// 1. Crea il context (il "contenitore globale")
 export const AuthContext = createContext(null);
 
-// 2. AuthProvider: il componente che avvolgerà tutta l'app
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // null = nessuno loggato
+  const [user, setUser] = useState(null);
 
-  // Per ora fake — quando ci sarà il backend, modifichi solo qui
+  // Login fake — da sostituire con chiamata API reale
   const login = (email, password) => {
-    setUser({ email, name: email.split("@")[0] });
+    setUser({
+      email,
+      name: email.split("@")[0],
+      username: email.split("@")[0],
+      bio: "",
+      avatar: null,
+      sparkCount: 0,
+      loveCount: 0,
+      collectionCount: 0,
+    });
   };
 
+  // Register fake — da sostituire con chiamata API reale
   const register = (name, username, email) => {
-    setUser({ name, username, email });
+    setUser({
+      name,
+      username,
+      email,
+      bio: "",
+      avatar: null,
+      sparkCount: 0,
+      loveCount: 0,
+      collectionCount: 0,
+    });
+  };
+
+  // Aggiorna solo i campi del profilo (nome, bio, avatar)
+  const updateProfile = (updates) => {
+    setUser((prev) => ({ ...prev, ...updates }));
   };
 
   const logout = () => {
@@ -21,13 +43,12 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// 3. Hook per leggere il context — questo è ciò che importeranno tutti gli altri
 export function useAuth() {
   return useContext(AuthContext);
 }
