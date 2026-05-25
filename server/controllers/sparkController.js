@@ -1,14 +1,38 @@
 const Spark = require("../models/Spark");
 const UserLove = require("../models/userLove");
+const User = require("../models/User");
+const formatSpark = (spark) => ({
+  id: spark.id,
+  url: spark.imageUrl, // image.url ← imageUrl
+  imageUrl: spark.imageUrl,
+  title: spark.title || "Senza titolo",
+  caption: spark.caption || "",
+  category: spark.category || "",
+  source: spark.source || "",
+  tags: spark.tags || [],
+  loves: 0,
+  views: 0,
+  trending: false,
+  comments: [],
+  author: spark.User?.username || "anonymous", // image.author
+  avatar:
+    spark.User?.avatar ||
+    `https://picsum.photos/seed/${spark.User?.username || "anonymous"}/64/64`,
+  authorLevel: spark.User?.level || 1,
+  userId: spark.userId,
+  createdAt: spark.createdAt,
+});
 
 // READ - Tutti gli spark (feed pubblico)
 const getSparks = async (req, res) => {
   try {
     const sparks = await Spark.findAll({
-      order: [["createdAt", "DESC"]], // i più recenti prima
+      order: [["createdAt", "DESC"]],
+      include: [{ model: User, attributes: ["username", "avatar", "level"] }],
     });
-    res.json(sparks);
+    res.json(sparks.map(formatSpark));
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Errore nel recupero degli spark" });
   }
 };
@@ -19,8 +43,9 @@ const getMySparks = async (req, res) => {
     const sparks = await Spark.findAll({
       where: { userId: req.user.id },
       order: [["createdAt", "DESC"]],
+      include: [{ model: User, attributes: ["username", "avatar", "level"] }],
     });
-    res.json(sparks);
+    res.json(sparks.map(formatSpark));
   } catch (error) {
     res.status(500).json({ error: "Errore nel recupero degli spark" });
   }
@@ -29,17 +54,16 @@ const getMySparks = async (req, res) => {
 // READ - Singolo spark per ID
 const getSparkById = async (req, res) => {
   try {
-    const spark = await Spark.findByPk(req.params.id);
-
-    if (!spark) {
-      return res.status(404).json({ error: "Spark non trovato" });
-    }
-
-    res.json(spark);
+    const spark = await Spark.findByPk(req.params.id, {
+      include: [{ model: User, attributes: ["username", "avatar", "level"] }],
+    });
+    if (!spark) return res.status(404).json({ error: "Spark non trovato" });
+    res.json(formatSpark(spark));
   } catch (error) {
     res.status(500).json({ error: "Errore nel recupero dello spark" });
   }
 };
+
 
 // CREATE - Carica un nuovo spark
 const createSpark = async (req, res) => {
