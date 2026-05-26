@@ -1,9 +1,5 @@
 import { useRef } from "react";
 import ImageCard from "./ImageCard";
-<div
-  className="p-4 columns-2 md:columns-3 lg:columns-4 xl:columns-4 gap-x-3"
-  onDoubleClick={(e) => alert("dblclick sulla GRIGLIA! " + e.target.tagName)}
-></div>;
 export default function MasonryGrid({ images, onSpark, onSelectImage }) {
   const cardTapMap = useRef({});
   const cardRefs = useRef({});

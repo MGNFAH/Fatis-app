@@ -7,7 +7,6 @@ import CategoryBar from "./components/CategoryBar";
 import ImageModal from "./components/ImageModal";
 import { BrowserRouter, Routes, Route } from "react-router";
 import { useState } from "react";
-import { fakeImages } from "./data/placeholderImages";
 import { AuthProvider } from "./hooks/AuthContext";
 import Register from "./pages/Register";
 import Collections from "./pages/Collections";
@@ -16,7 +15,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   const [sparkCount, setSparkCount] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
-
+  const [allSparks, setAllSparks] = useState([]); 
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -30,7 +29,7 @@ function App() {
               <Home
                 onSpark={() => setSparkCount((c) => c + 1)}
                 onSelectImage={setSelectedImage}
-                allImages={fakeImages}
+                onSparksFetched={setAllSparks}
               />
             }
           />
@@ -54,7 +53,6 @@ function App() {
           />
 
           <Route path="/register" element={<Register />} />
-
         </Routes>
 
         {/* Modale globale — accessibile da ovunque */}
@@ -62,7 +60,7 @@ function App() {
           <ImageModal
             image={selectedImage}
             onClose={() => setSelectedImage(null)}
-            allImages={fakeImages} // ← era "images", ora "placeholderImages"
+            allImages={allSparks}
           />
         )}
       </BrowserRouter>

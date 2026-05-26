@@ -6,7 +6,7 @@ import CreateSparkModal from "../components/CreateSparkModal";
 import { useAuth } from "../hooks/useAuth";
 import api from "../api";
 
-export default function Home({ onSpark, onSelectImage }) {
+export default function Home({ onSpark, onSelectImage, onSparksFetched }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,11 +17,11 @@ export default function Home({ onSpark, onSelectImage }) {
 
   // Carica gli spark dal backend al mount
   useEffect(() => {
-    api
-      .get("/api/sparks")
-      .then((res) => setImages(res.data))
-      .catch((err) => console.error("Errore caricamento spark:", err))
-      .finally(() => setLoading(false));
+    api.get("/api/sparks").then((res) => setImages(res.data));
+    if (onSparksFetched)
+      onSparksFetched(res.data)
+        .catch((err) => console.error("Errore caricamento spark:", err))
+        .finally(() => setLoading(false));
   }, []);
 
   // Apri spark da URL (es. ?spark=123)
@@ -46,7 +46,9 @@ export default function Home({ onSpark, onSelectImage }) {
 
   // Lo spark arriva già dal DB con id reale
   const handlePublish = (newSpark) => {
-    setImages((prev) => [newSpark, ...prev]);
+    const updated = [newSpark, ...images];
+    setImages(updated);
+    if (onSparksFetched) onSparksFetched(updated); // ← aggiorna anche allSparks in App
     if (onSpark) onSpark();
   };
 

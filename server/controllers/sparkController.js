@@ -83,6 +83,11 @@ const createSpark = async (req, res) => {
       tags: tags || [],
       userId: req.user.id,
     });
+    // Ricarica con utente incluso per restituire il formato corretto
+    const sparkWithUser = await Spark.findByPk(spark.id, {
+      include: [{ model: User, attributes: ["username", "avatar", "level"] }],
+    });
+    res.status(201).json(formatSpark(sparkWithUser));
 
     res.status(201).json(spark);
   } catch (error) {
@@ -163,7 +168,14 @@ const getLovedSparks = async (req, res) => {
   try {
     const loves = await UserLove.findAll({
       where: { userId: req.user.id },
-      include: [Spark],
+      include: [
+        {
+          model: Spark,
+          include: [
+            { model: User, attributes: ["username", "avatar", "level"] },
+          ],
+        },
+      ],
     });
     res.json(loves.map((l) => l.Spark));
   } catch (error) {
