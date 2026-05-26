@@ -5,11 +5,28 @@ const helmet = require("helmet");
 const { connectDB, sequelize } = require("./config/db");
 
 // Importa tutti i models per registrarli
-require("./models/User");
-require("./models/Spark");
-require("./models/Collection");
-require("./models/userLove");
-require("./models/collectionSpark");
+const User = require("./models/User");
+const Spark = require("./models/Spark");
+const Collection = require("./models/Collection");
+const UserLove = require("./models/userLove");
+const CollectionSpark = require("./models/collectionSpark");
+
+// ── Associazioni ──────────────────────────────────────
+User.hasMany(Spark, { foreignKey: "userId" });
+Spark.belongsTo(User, { foreignKey: "userId" });
+
+User.hasMany(Collection, { foreignKey: "userId" });
+Collection.belongsTo(User, { foreignKey: "userId" });
+
+User.hasMany(UserLove, { foreignKey: "userId" });
+UserLove.belongsTo(User, { foreignKey: "userId" });
+
+Spark.hasMany(UserLove, { foreignKey: "sparkId" });
+UserLove.belongsTo(Spark, { foreignKey: "sparkId" });
+
+Collection.belongsToMany(Spark, { through: CollectionSpark, foreignKey: "collectionId" });
+Spark.belongsToMany(Collection, { through: CollectionSpark, foreignKey: "sparkId" });
+
 
 const app = express();
 

@@ -21,9 +21,10 @@ const CollectionSpark = sequelize.define(
 );
 
 // Associazioni — dicono a Sequelize come fare il JOIN
-CollectionSpark.belongsTo(Collection, { foreignKey: "collectionId" });
-CollectionSpark.belongsTo(Spark, { foreignKey: "sparkId" });
-Collection.hasMany(CollectionSpark, { foreignKey: "collectionId" });
-Spark.hasMany(CollectionSpark, { foreignKey: "sparkId" });
+
+const CollectionSpark = sequelize.define("CollectionSpark", {
+  collectionId: { type: DataTypes.INTEGER, allowNull: false },
+  sparkId: { type: DataTypes.INTEGER, allowNull: false },
+});
 
 module.exports = CollectionSpark;
