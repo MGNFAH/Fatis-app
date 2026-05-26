@@ -429,16 +429,16 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
               }}
             >
               <LoversPreview lovers={localLovers} loves={localLoves} />
-              {showSaveModal && (
-                <SaveToCollectionModal
-                  spark={image}
-                  onClose={() => setShowSaveModal(false)}
-                />
-              )}
             </div>
           </div>
         </div>
       </div>
+      {showSaveModal && (
+        <SaveToCollectionModal
+          spark={image}
+          onClose={() => setShowSaveModal(false)}
+        />
+      )}
     </div>
   );
 });
