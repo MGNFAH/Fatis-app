@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "re
 import { useHeartSound } from "../hooks/useHeartSound";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router";
+import SaveToCollectionModal from "./SaveToCollectionModal";
+import { FaBookmark } from "react-icons/fa";
 import api from "../api";
 
 function LevelBadge({ level }) {
@@ -69,6 +71,7 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
   const [glowing, setGlowing] = useState(false);
   const [bouncing, setBouncing] = useState(false);
   const [viewed, setViewed] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
   const [viewBouncing, setViewBouncing] = useState(false);
   const { playLove, playUnlove } = useHeartSound();
   const sparkedRef = useRef(false);
@@ -191,7 +194,6 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
           onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
         />
       )}
-      
 
       {image.loves >= 1000 && (
         <div
@@ -274,6 +276,18 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
             card.addEventListener("mouseleave", hide);
           }}
         >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowSaveModal(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/90 text-black/70 hover:bg-white transition-colors"
+            style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}
+          >
+            <FaBookmark style={{ fontSize: "11px" }} />
+            Salva
+          </button>
+
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -415,6 +429,12 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
               }}
             >
               <LoversPreview lovers={localLovers} loves={localLoves} />
+              {showSaveModal && (
+                <SaveToCollectionModal
+                  spark={image}
+                  onClose={() => setShowSaveModal(false)}
+                />
+              )}
             </div>
           </div>
         </div>
