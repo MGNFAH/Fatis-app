@@ -20,11 +20,4 @@ const CollectionSpark = sequelize.define(
   },
 );
 
-// Associazioni — dicono a Sequelize come fare il JOIN
-
-const CollectionSpark = sequelize.define("CollectionSpark", {
-  collectionId: { type: DataTypes.INTEGER, allowNull: false },
-  sparkId: { type: DataTypes.INTEGER, allowNull: false },
-});
-
 module.exports = CollectionSpark;
