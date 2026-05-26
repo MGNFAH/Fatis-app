@@ -1,7 +1,5 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/db");
-const Collection = require("./Collection");
-const Spark = require("./Spark");
 
 const CollectionSpark = sequelize.define(
   "CollectionSpark",
