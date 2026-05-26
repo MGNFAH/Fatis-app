@@ -10,7 +10,7 @@ const formatSpark = (spark) => ({
   category: spark.category || "",
   source: spark.source || "",
   tags: spark.tags || [],
-  loves: 0,
+  loves: parseInt(spark.dataValues?.loveCount || 0),  
   views: 0,
   trending: false,
   comments: [],
@@ -24,18 +24,23 @@ const formatSpark = (spark) => ({
 });
 
 // READ - Tutti gli spark (feed pubblico)
-const getSparks = async (req, res) => {
-  try {
-    const sparks = await Spark.findAll({
-      order: [["createdAt", "DESC"]],
-      include: [{ model: User, attributes: ["username", "avatar", "level"] }],
-    });
-    res.json(sparks.map(formatSpark));
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Errore nel recupero degli spark" });
-  }
-};
+cconst sparks = await Spark.findAll({
+  order: [["createdAt", "DESC"]],
+  include: [
+    { model: User, attributes: ["username", "avatar", "level"] },
+  ],
+  attributes: {
+    include: [
+      [
+        Spark.sequelize.literal(
+          `(SELECT COUNT(*) FROM "UserLoves" WHERE "UserLoves"."sparkId" = "Spark"."id")`
+        ),
+        "loveCount",
+      ],
+    ],
+  },
+});
+res.json(sparks.map(formatSpark));
 
 // READ - Solo gli spark dell'utente loggato
 const getMySparks = async (req, res) => {
@@ -88,8 +93,6 @@ const createSpark = async (req, res) => {
       include: [{ model: User, attributes: ["username", "avatar", "level"] }],
     });
     res.status(201).json(formatSpark(sparkWithUser));
-
-    res.status(201).json(spark);
   } catch (error) {
     res.status(500).json({ error: "Errore nella creazione dello spark" });
   }
