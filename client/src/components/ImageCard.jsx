@@ -84,30 +84,29 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
   }, [image.url]);
 
   const handleLove = async (e) => {
-    e?.stopPropagation();
-    if (!user) {
-      navigate("/login");
-      return;
-    }
+  e?.stopPropagation();
+  if (!user) {
+    navigate("/login");
+    return;
+  }
 
-    const newSparked = !sparkedRef.current;
-    sparkedRef.current = newSparked;
-    setSparked(newSparked);
+  const newSparked = !sparkedRef.current;
+  sparkedRef.current = newSparked;
+  setSparked(newSparked);
 
-    if (!sparkedRef.current) {
-      setAnimating(true);
-      setTimeout(() => setAnimating(false), 400);
-      setGlowing(true);
-      setTimeout(() => setGlowing(false), 700);
-      setBouncing(true);
-      setTimeout(() => setBouncing(false), 500);
-      onSpark?.();
-      playLove();
-    } else {
-      playUnlove();
-    }
-  
-      try {
+  // Animazioni — basate su newSparked, non su sparkedRef (già aggiornato)
+  if (newSparked) {
+    setAnimating(true); setTimeout(() => setAnimating(false), 400);
+    setGlowing(true);   setTimeout(() => setGlowing(false), 700);
+    setBouncing(true);  setTimeout(() => setBouncing(false), 500);
+    onSpark?.();
+    playLove();
+  } else {
+    playUnlove();
+  }
+
+  // Chiama API in background (optimistic UI)
+  try {
     if (newSparked) {
       await api.post(`/api/sparks/${image.id}/love`);
     } else {
@@ -120,12 +119,6 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
     console.error("Errore love:", err);
   }
 };
-
-    sparkedRef.current = !sparkedRef.current;
-    setSparked(sparkedRef.current);
-  };
-  ;
-
   
 
   // Espone handleLove a MasonryGrid tramite ref
