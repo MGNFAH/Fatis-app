@@ -24,23 +24,30 @@ const formatSpark = (spark) => ({
 });
 
 // READ - Tutti gli spark (feed pubblico)
-cconst sparks = await Spark.findAll({
-  order: [["createdAt", "DESC"]],
-  include: [
-    { model: User, attributes: ["username", "avatar", "level"] },
-  ],
-  attributes: {
-    include: [
-      [
-        Spark.sequelize.literal(
-          `(SELECT COUNT(*) FROM "UserLoves" WHERE "UserLoves"."sparkId" = "Spark"."id")`
-        ),
-        "loveCount",
+const getSparks = async (req, res) => {
+  try {
+    const sparks = await Spark.findAll({
+      order: [["createdAt", "DESC"]],
+      include: [
+        { model: User, attributes: ["username", "avatar", "level"] },
       ],
-    ],
-  },
-});
-res.json(sparks.map(formatSpark));
+      attributes: {
+        include: [
+          [
+            Spark.sequelize.literal(
+              `(SELECT COUNT(*) FROM "UserLoves" WHERE "UserLoves"."sparkId" = "Spark"."id")`
+            ),
+            "loveCount",
+          ],
+        ],
+      },
+    });
+    res.json(sparks.map(formatSpark));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Errore nel recupero degli spark" });
+  }
+};
 
 // READ - Solo gli spark dell'utente loggato
 const getMySparks = async (req, res) => {
