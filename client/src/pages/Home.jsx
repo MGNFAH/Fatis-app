@@ -16,14 +16,16 @@ export default function Home({ onSpark, onSelectImage, onSparksFetched }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Carica gli spark dal backend al mount
-  useEffect(() => {
-    api.get("/api/sparks").then((res) => setImages(res.data));
-    if (onSparksFetched)
-      onSparksFetched(res.data)
-        .catch((err) => console.error("Errore caricamento spark:", err))
-        .finally(() => setLoading(false));
-  }, []);
-
+ useEffect(() => {
+   api
+     .get("/api/sparks")
+     .then((res) => {
+       setImages(res.data);
+       if (onSparksFetched) onSparksFetched(res.data);
+     })
+     .catch((err) => console.error("Errore caricamento spark:", err))
+     .finally(() => setLoading(false));
+ }, []);
   // Apri spark da URL (es. ?spark=123)
   useEffect(() => {
     const sparkId = searchParams.get("spark");
