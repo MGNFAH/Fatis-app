@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "re
 import { useHeartSound } from "../hooks/useHeartSound";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router";
-
+import api from "../api";
 
 function LevelBadge({ level }) {
   return (
@@ -83,28 +83,50 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
     setImgError(false);
   }, [image.url]);
 
-  const handleLove = (e) => {
+  const handleLove = async (e) => {
     e?.stopPropagation();
     if (!user) {
       navigate("/login");
       return;
-    } 
-      if (!sparkedRef.current) {
-        setAnimating(true);
-        setTimeout(() => setAnimating(false), 400);
-        setGlowing(true);
-        setTimeout(() => setGlowing(false), 700);
-        setBouncing(true);
-        setTimeout(() => setBouncing(false), 500);
-        onSpark?.();
-        playLove();
-      } else {
-        playUnlove();
-      }
-      sparkedRef.current = !sparkedRef.current;
-      setSparked(sparkedRef.current);
     }
+
+    const newSparked = !sparkedRef.current;
+    sparkedRef.current = newSparked;
+    setSparked(newSparked);
+
+    if (!sparkedRef.current) {
+      setAnimating(true);
+      setTimeout(() => setAnimating(false), 400);
+      setGlowing(true);
+      setTimeout(() => setGlowing(false), 700);
+      setBouncing(true);
+      setTimeout(() => setBouncing(false), 500);
+      onSpark?.();
+      playLove();
+    } else {
+      playUnlove();
+    }
+  
+      try {
+    if (newSparked) {
+      await api.post(`/api/sparks/${image.id}/love`);
+    } else {
+      await api.delete(`/api/sparks/${image.id}/love`);
+    }
+  } catch (err) {
+    // Rollback se l'API fallisce
+    sparkedRef.current = !newSparked;
+    setSparked(!newSparked);
+    console.error("Errore love:", err);
+  }
+};
+
+    sparkedRef.current = !sparkedRef.current;
+    setSparked(sparkedRef.current);
+  };
   ;
+
+  
 
   // Espone handleLove a MasonryGrid tramite ref
   useImperativeHandle(ref, () => ({ triggerLove: handleLove }));

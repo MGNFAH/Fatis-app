@@ -95,23 +95,20 @@ export default function Profile() {
 
 
   // Sostituisci handleSave
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const res = await api.put("/api/users/me", {
-        name: formName,
-        bio: formBio,
-        avatar: formAvatarPreview,
-      });
-      // Aggiorna il contesto globale con i dati reali dal server
-      updateProfile(res.data);
-      setIsEditing(false);
-    } catch (err) {
-      alert(err.response?.data?.error || "Errore nel salvataggio. Riprova.");
-    } finally {
-      setSaving(false);
-    }
-  };
+ const handleSave = async () => {
+   try {
+     const res = await api.put("/api/users/me", {
+       name: formName,
+       bio: formBio,
+       avatar: formAvatarPreview || undefined,
+     });
+     updateProfile(res.data); // aggiorna AuthContext
+     setEditMode(false);
+   } catch (err) {
+     console.error("Errore salvataggio profilo:", err);
+   }
+ };
+
 
   const handleCancel = () => {
     setFormName(user.name || "");
