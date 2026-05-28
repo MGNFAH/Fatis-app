@@ -1,9 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router";
 import api from "../api";
 
-// Avatar con iniziali come fallback
 function AvatarDisplay({ user, size = "lg" }) {
   const sizeMap = {
     sm: "w-10 h-10 text-base",
@@ -35,15 +34,61 @@ function AvatarDisplay({ user, size = "lg" }) {
   );
 }
 
-// Statistica singola
 function StatCard({ label, value }) {
   return (
     <div className="flex flex-col items-center gap-1 px-4">
       <span className="text-xl font-bold text-white">{value}</span>
-      <span className="text-xs text-white/50 uppercase tracking-widest">{label}</span>
+      <span className="text-xs text-white/50 uppercase tracking-widest">
+        {label}
+      </span>
     </div>
   );
 }
+
+// Griglia riutilizzabile per My Sparks e Loved
+function SparkGrid({ sparks, loading, emptyMessage, onDelete }) {
+  if (loading) {
+    return (
+      <div className="grid grid-cols-3 gap-1.5">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="skeleton aspect-square rounded-lg" />
+        ))}
+      </div>
+    );
+  }
+  if (!sparks.length) {
+    return (
+      <div className="flex flex-col items-center gap-2 py-12 text-white/25">
+        <span className="text-4xl">✦</span>
+        <p className="text-sm">{emptyMessage}</p>
+      </div>
+    );
+  }
+  return (
+    <div className="grid grid-cols-3 gap-1.5">
+      {sparks.map((spark) => (
+        <div key={spark.id} className="relative group aspect-square">
+          <img
+            src={spark.url || spark.imageUrl}
+            alt={spark.title}
+            className="w-full h-full object-cover rounded-lg"
+          />
+          {onDelete && (
+            <button
+              onClick={() => onDelete(spark.id)}
+              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-white/70 hover:text-white hover:bg-red-600/80 text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
+              aria-label="Elimina spark"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const TABS = ["My Sparks", "Loved"];
 
 export default function Profile() {
   const { user, updateProfile, logout } = useAuth();
@@ -53,7 +98,6 @@ export default function Profile() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
 
-  // Campi del form
   const [formName, setFormName] = useState(user?.name || "");
   const [formBio, setFormBio] = useState(user?.bio || "");
   const [formAvatarPreview, setFormAvatarPreview] = useState(
@@ -62,7 +106,52 @@ export default function Profile() {
 
   const fileInputRef = useRef(null);
 
-  // Se non loggato, redirect al login
+  // Tab state
+  const [activeTab, setActiveTab] = useState("My Sparks");
+  const [mySparks, setMySparks] = useState([]);
+  const [lovedSparks, setLovedSparks] = useState([]);
+  const [loadingMy, setLoadingMy] = useState(false);
+  const [loadingLoved, setLoadingLoved] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    fetchMySparks();
+    fetchLovedSparks();
+  }, [user]);
+
+  const fetchMySparks = async () => {
+    setLoadingMy(true);
+    try {
+      const res = await api.get("/api/sparks/me");
+      setMySparks(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingMy(false);
+    }
+  };
+
+  const fetchLovedSparks = async () => {
+    setLoadingLoved(true);
+    try {
+      const res = await api.get("/api/sparks/me/loved");
+      setLovedSparks(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingLoved(false);
+    }
+  };
+
+  const handleDeleteSpark = async (sparkId) => {
+    try {
+      await api.delete(`/api/sparks/${sparkId}`);
+      setMySparks((prev) => prev.filter((s) => s.id !== sparkId));
+    } catch (err) {
+      console.error("Errore eliminazione spark:", err);
+    }
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
@@ -79,7 +168,6 @@ export default function Profile() {
     );
   }
 
-  // Gestione upload avatar (anteprima locale — non invia ancora al server)
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -92,23 +180,24 @@ export default function Profile() {
     reader.readAsDataURL(file);
   };
 
-
-
-  // Sostituisci handleSave
- const handleSave = async () => {
-   try {
-     const res = await api.put("/api/users/me", {
-       name: formName,
-       bio: formBio,
-       avatar: formAvatarPreview || undefined,
-     });
-     updateProfile(res.data); // aggiorna AuthContext
-     setEditMode(false);
-   } catch (err) {
-     console.error("Errore salvataggio profilo:", err);
-   }
- };
-
+  const handleSave = async () => {
+    setIsSaving(true);
+    setSaveError("");
+    try {
+      const res = await api.put("/api/users/me", {
+        name: formName,
+        bio: formBio,
+        avatar: formAvatarPreview || undefined,
+      });
+      updateProfile(res.data);
+      setIsEditing(false); // ← fix del bug
+    } catch (err) {
+      setSaveError("Errore nel salvataggio. Riprova.");
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleCancel = () => {
     setFormName(user.name || "");
@@ -123,10 +212,9 @@ export default function Profile() {
     navigate("/login");
   };
 
-  // Stat placeholder — in futuro verranno dall'API
   const stats = [
-    { label: "Spark", value: user.sparkCount ?? 0 },
-    { label: "Love", value: user.loveCount ?? 0 },
+    { label: "Spark", value: mySparks.length },
+    { label: "Love", value: lovedSparks.length },
     { label: "Collezioni", value: user.collectionCount ?? 0 },
   ];
 
@@ -135,7 +223,6 @@ export default function Profile() {
       <div className="max-w-2xl mx-auto flex flex-col gap-8">
         {/* ── HEADER PROFILO ── */}
         <div className="flex flex-col items-center gap-4">
-          {/* Avatar con overlay edit */}
           <div className="relative group">
             {isEditing ? (
               <>
@@ -148,7 +235,6 @@ export default function Profile() {
                 ) : (
                   <AvatarDisplay user={{ ...user, avatar: null }} size="xl" />
                 )}
-                {/* Bottone modifica foto */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
@@ -188,7 +274,6 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Nome e username */}
           {isEditing ? (
             <div className="flex flex-col items-center gap-2 w-full max-w-xs">
               <input
@@ -212,7 +297,6 @@ export default function Profile() {
             </div>
           )}
 
-          {/* Statistiche */}
           <div className="flex items-center divide-x divide-white/10 mt-2">
             {stats.map((s) => (
               <StatCard key={s.label} label={s.label} value={s.value} />
@@ -235,12 +319,11 @@ export default function Profile() {
               </button>
             )}
           </div>
-
           {isEditing ? (
             <textarea
               value={formBio}
               onChange={(e) => setFormBio(e.target.value)}
-              placeholder="Raccontati agli altri artisti... chi sei, da dove vieni, cosa ti ispira?"
+              placeholder="Raccontati agli altri artisti..."
               rows={4}
               maxLength={300}
               className="textarea textarea-bordered w-full bg-white/5 border-white/10 text-white placeholder-white/30 text-sm resize-none rounded-xl"
@@ -258,6 +341,51 @@ export default function Profile() {
             <span className="text-white/25 text-xs text-right">
               {formBio.length}/300
             </span>
+          )}
+        </div>
+
+        {/* ── MY SPARKS / LOVED TABS ── */}
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-1 bg-white/5 rounded-xl p-1">
+            {TABS.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === tab
+                    ? "bg-white text-black"
+                    : "text-white/40 hover:text-white/70"
+                }`}
+              >
+                {tab}
+                {tab === "My Sparks" && mySparks.length > 0 && (
+                  <span className="ml-1.5 text-xs opacity-60">
+                    ({mySparks.length})
+                  </span>
+                )}
+                {tab === "Loved" && lovedSparks.length > 0 && (
+                  <span className="ml-1.5 text-xs opacity-60">
+                    ({lovedSparks.length})
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {activeTab === "My Sparks" && (
+            <SparkGrid
+              sparks={mySparks}
+              loading={loadingMy}
+              emptyMessage="Non hai ancora caricato nessuno spark."
+              onDelete={handleDeleteSpark}
+            />
+          )}
+          {activeTab === "Loved" && (
+            <SparkGrid
+              sparks={lovedSparks}
+              loading={loadingLoved}
+              emptyMessage="Non hai ancora messo love a nessuno spark."
+            />
           )}
         </div>
 
