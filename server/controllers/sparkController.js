@@ -86,7 +86,7 @@ const getUploadSignature = (req, res) => {
 
     const signature = cloudinary.utils.api_sign_request(
       { timestamp, folder },
-      process.env.CLOUDINARY_API_SECRET
+      process.env.CLOUDINARY_API_SECRET,
     );
 
     res.json({
@@ -97,8 +97,8 @@ const getUploadSignature = (req, res) => {
       apiKey: process.env.CLOUDINARY_API_KEY,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Errore nella generazione della firma" });
+    console.error("Signature error:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
