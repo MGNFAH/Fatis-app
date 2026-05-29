@@ -119,45 +119,57 @@ const handleSubmit = async (e) => {
 
   setIsLoading(true);
   try {
-    let res;
+    let imageUrl;
 
-    if (imageMode === "hotlink") {
-      // Hotlink → JSON normale come prima
-      res = await api.post("/api/sparks", {
-        imageUrl: form.imageUrl.trim(),
-        source: form.sourcePageUrl.trim(),
-        title: form.title.trim(),
-        caption: form.caption.trim(),
-        category: form.category,
-        tags,
-      });
-    } else {
-      // Upload file → FormData
+    if (imageMode === "upload") {
+      // 1. Chiedi la firma al backend
+      const { data: sigData } = await api.get("/api/sparks/upload-signature");
+
+      // 2. Carica direttamente su Cloudinary
       const formData = new FormData();
-      formData.append("image", imageFile);
-      formData.append("title", form.title.trim());
-      formData.append("caption", form.caption.trim());
-      formData.append("category", form.category);
-      formData.append("source", form.sourcePageUrl.trim());
-      formData.append("tags", JSON.stringify(tags)); // array → stringa
+      formData.append("file", imageFile);
+      formData.append("api_key", sigData.apiKey);
+      formData.append("timestamp", sigData.timestamp);
+      formData.append("signature", sigData.signature);
+      formData.append("folder", sigData.folder);
 
-      res = await api.post("/api/sparks", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const cloudRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`,
+        { method: "POST", body: formData },
+      );
+      const cloudData = await cloudRes.json();
+
+      if (!cloudData.secure_url) {
+        throw new Error("Upload su Cloudinary fallito");
+      }
+      imageUrl = cloudData.secure_url;
+    } else {
+      imageUrl = form.imageUrl.trim();
     }
+
+    // 3. Salva nel DB con l'URL finale
+    const res = await api.post("/api/sparks", {
+      imageUrl,
+      source: form.sourcePageUrl.trim(),
+      title: form.title.trim(),
+      caption: form.caption.trim(),
+      category: form.category,
+      tags,
+    });
 
     onPublish(res.data);
     onClose();
   } catch (err) {
     setErrors({
       general:
-        err.response?.data?.error || "Errore nella pubblicazione. Riprova.",
+        err.response?.data?.error ||
+        err.message ||
+        "Errore nella pubblicazione. Riprova.",
     });
   } finally {
     setIsLoading(false);
   }
 };
-
   // ── Stili input condivisi ──────────────────────────────────
   const inputClass =
     "w-full bg-neutral-800 text-white text-sm rounded-xl px-4 py-3 outline-none placeholder-neutral-600 transition";
@@ -370,6 +382,20 @@ const handleSubmit = async (e) => {
               scrollbarColor: "#3f3f3f transparent",
             }}
           >
+            {/* Errore generale — aggiunto qui */}
+            {errors.general && (
+              <p
+                className="text-sm px-4 py-3 rounded-xl"
+                style={{
+                  background: "rgba(232,0,13,0.1)",
+                  border: "1px solid rgba(232,0,13,0.2)",
+                  color: "#ff4d4d",
+                }}
+              >
+                {errors.general}
+              </p>
+            )}
+            
             {/* Titolo */}
             <div className="flex flex-col gap-1.5">
               <label className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
