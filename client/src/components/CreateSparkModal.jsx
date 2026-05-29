@@ -109,39 +109,54 @@ const validate = () => {
   return newErrors;
 };
   // ── Submit ─────────────────────────────────────────────────
- const handleSubmit = async (e) => {
-   e.preventDefault();
-   const newErrors = validate();
-   if (Object.keys(newErrors).length > 0) {
-     setErrors(newErrors);
-     return;
-   }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const newErrors = validate();
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
 
-   setIsLoading(true);
-   try {
-     const imageUrl = imageMode === "hotlink" ? form.imageUrl.trim() : preview;
+  setIsLoading(true);
+  try {
+    let res;
 
-     const res = await api.post("/api/sparks", {
-       imageUrl,
-       source: form.sourcePageUrl.trim(),
-       title: form.title.trim(),
-       caption: form.caption.trim(),
-       category: form.category,
-       tags,
-     });
+    if (imageMode === "hotlink") {
+      // Hotlink → JSON normale come prima
+      res = await api.post("/api/sparks", {
+        imageUrl: form.imageUrl.trim(),
+        source: form.sourcePageUrl.trim(),
+        title: form.title.trim(),
+        caption: form.caption.trim(),
+        category: form.category,
+        tags,
+      });
+    } else {
+      // Upload file → FormData
+      const formData = new FormData();
+      formData.append("image", imageFile);
+      formData.append("title", form.title.trim());
+      formData.append("caption", form.caption.trim());
+      formData.append("category", form.category);
+      formData.append("source", form.sourcePageUrl.trim());
+      formData.append("tags", JSON.stringify(tags)); // array → stringa
 
-     // Passa lo spark reale (con id dal DB) alla Home
-     onPublish(res.data);
-     onClose();
-   } catch (err) {
-     setErrors({
-       general:
-         err.response?.data?.error || "Errore nella pubblicazione. Riprova.",
-     });
-   } finally {
-     setIsLoading(false);
-   }
- };
+      res = await api.post("/api/sparks", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    }
+
+    onPublish(res.data);
+    onClose();
+  } catch (err) {
+    setErrors({
+      general:
+        err.response?.data?.error || "Errore nella pubblicazione. Riprova.",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // ── Stili input condivisi ──────────────────────────────────
   const inputClass =

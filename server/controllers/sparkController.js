@@ -80,11 +80,15 @@ const getSparkById = async (req, res) => {
 // CREATE - Carica un nuovo spark
 const createSpark = async (req, res) => {
   try {
-    const { imageUrl, source, tags, title, caption, category } = req.body;
+    // Se c'è un file caricato → usa l'URL di Cloudinary
+    // Se c'è imageUrl nel body → hotlink
+    const imageUrl = req.file?.path || req.body.imageUrl;
 
     if (!imageUrl) {
       return res.status(400).json({ error: "L'immagine è obbligatoria" });
     }
+
+    const { source, tags, title, caption, category } = req.body;
 
     const spark = await Spark.create({
       imageUrl,
@@ -92,15 +96,17 @@ const createSpark = async (req, res) => {
       caption,
       category,
       source,
-      tags: tags || [],
+      tags: tags ? JSON.parse(tags) : [], // FormData manda tutto come stringa
       userId: req.user.id,
     });
-    // Ricarica con utente incluso per restituire il formato corretto
+
     const sparkWithUser = await Spark.findByPk(spark.id, {
       include: [{ model: User, attributes: ["username", "avatar", "level"] }],
     });
+
     res.status(201).json(formatSpark(sparkWithUser));
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Errore nella creazione dello spark" });
   }
 };
