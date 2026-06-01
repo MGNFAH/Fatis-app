@@ -90,7 +90,6 @@ const sparkWithUser = await Spark.findByPk(spark.id, {
   include: [{ model: User, attributes: ["username", "avatar", "level"] }],
 });
 res.status(201).json(formatSpark(sparkWithUser));
-    res.status(201).json(spark);
   } catch (error) {
     res.status(500).json({ error: "Errore nella creazione dello spark" });
   }
