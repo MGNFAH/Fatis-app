@@ -2,16 +2,16 @@ import { useState } from "react";
 
 const categories = [
   "Featured",
-  "Pittura",
-  "Disegno",
-  "Scultura",
-  "Fotografia",
-  "Arte Digitale",
-  "Illustrazione",
-  "Grafica",
-  "Architettura",
+  "Painting",
+  "Drawing",
+  "Scultping",
+  "Photography",
+  "Digital Art",
+  "Illustration",
+  "Graphics",
+  "Architecture",
   "Design",
-  "Moda",
+  "Fashion",
   "Cinema",
 ];
 

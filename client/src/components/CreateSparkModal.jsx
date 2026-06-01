@@ -9,14 +9,14 @@ import {
 import api from "../api";
 
 const CATEGORIES = [
-  "Pittura ad olio",
-  "Acquerello",
-  "Disegno",
-  "Scultura",
-  "Fotografia",
-  "Arte digitale",
-  "Illustrazione",
-  "Altro",
+  "Painting",
+  "Drawing",
+  "Scultping",
+  "Sculpture",
+  "Photography",
+  "Digital Art",
+  "Illustration",
+  "Other",
 ];
 
 export default function CreateSparkModal({ onClose, onPublish }) {
@@ -92,19 +92,19 @@ const validate = () => {
   const newErrors = {};
 
   if (imageMode === "upload" && !preview) {
-    newErrors.image = "Carica un'immagine per il tuo Spark.";
+    newErrors.image = "Upload an Image for your Spark";
   }
 
   if (imageMode === "hotlink") {
     if (!form.imageUrl.trim()) {
-      newErrors.image = "Inserisci l'URL diretto di un'immagine.";
+      newErrors.image = "Insert the direct URL of an image.";
     } else if (remotePreviewError) {
-      newErrors.image = "Questa immagine non può essere caricata via hotlink.";
+      newErrors.image = "This image cannot be loaded via hotlink.";
     }
   }
 
-  if (!form.title.trim()) newErrors.title = "Il titolo è obbligatorio.";
-  if (!form.category) newErrors.category = "Scegli una categoria.";
+  if (!form.title.trim()) newErrors.title = "Title is required.";
+  if (!form.category) newErrors.category = "Choose a category.";
 
   return newErrors;
 };
@@ -140,7 +140,7 @@ const handleSubmit = async (e) => {
       const cloudData = await cloudRes.json();
 
       if (!cloudData.secure_url) {
-        throw new Error("Upload su Cloudinary fallito");
+        throw new Error("Upload to Cloudinary failed.");
       }
       imageUrl = cloudData.secure_url;
     } else {
@@ -164,7 +164,7 @@ const handleSubmit = async (e) => {
       general:
         err.response?.data?.error ||
         err.message ||
-        "Errore nella pubblicazione. Riprova.",
+        "Error in publication. Please try again later.",
     });
   } finally {
     setIsLoading(false);
@@ -276,10 +276,10 @@ const handleSubmit = async (e) => {
                 />
                 <div className="text-center">
                   <p className="text-white text-sm font-semibold">
-                    Trascina l'immagine qui
+                    Drag and drop image here
                   </p>
                   <p className="text-neutral-500 text-xs mt-1">
-                    oppure clicca per selezionare
+                    or click to select
                   </p>
                 </div>
                 <p className="text-neutral-600 text-xs">
@@ -290,7 +290,7 @@ const handleSubmit = async (e) => {
           ) : (
             <div className="w-full flex flex-col gap-3">
               <label className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
-                URL immagine
+                Image URL of the image
               </label>
               <input
                 type="url"
@@ -325,16 +325,14 @@ const handleSubmit = async (e) => {
                   />
                 ) : (
                   <p className="text-neutral-600 text-xs px-4 text-center">
-                    Incolla un URL diretto a un file immagine per vedere
-                    l’anteprima.
+                    Paste a direct URL of an image to preview.
                   </p>
                 )}
               </div>
 
               {remotePreviewError && (
                 <p className="text-xs" style={{ color: "#ff4d4d" }}>
-                  L'immagine non è caricabile: il sito potrebbe bloccare
-                  l'hotlinking.
+                  Image not loadable: site might block hotlinking.
                 </p>
               )}
             </div>
@@ -399,7 +397,7 @@ const handleSubmit = async (e) => {
             {/* Titolo */}
             <div className="flex flex-col gap-1.5">
               <label className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
-                Titolo <span style={{ color: "#E8000D" }}>*</span>
+                Title <span style={{ color: "#E8000D" }}>*</span>
               </label>
               <input
                 type="text"
@@ -408,7 +406,7 @@ const handleSubmit = async (e) => {
                   setForm({ ...form, title: e.target.value });
                   setErrors((prev) => ({ ...prev, title: "" }));
                 }}
-                placeholder="Es. Tramonto sul Vesuvio"
+                placeholder="Ex. Sunset over Ves"
                 className={inputClass}
                 style={inputStyle}
                 onFocus={onFocus}
@@ -461,7 +459,7 @@ const handleSubmit = async (e) => {
               <textarea
                 value={form.caption}
                 onChange={(e) => setForm({ ...form, caption: e.target.value })}
-                placeholder="Racconta qualcosa su questo lavoro..."
+                placeholder="Describe this work..."
                 rows={3}
                 className={`${inputClass} resize-none`}
                 style={inputStyle}
@@ -475,7 +473,7 @@ const handleSubmit = async (e) => {
               <label className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
                 Tag{" "}
                 <span className="text-neutral-600 normal-case font-normal">
-                  (max 8 — premi Invio per aggiungere)
+                  (max 8 — press Enter to add)
                 </span>
               </label>
               <div
@@ -515,7 +513,7 @@ const handleSubmit = async (e) => {
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={handleTagKeyDown}
                     placeholder={
-                      tags.length === 0 ? "oilpainting, napoli..." : ""
+                      tags.length === 0 ? "oilpainting, taly..." : ""
                     }
                     className="bg-transparent text-white text-xs outline-none flex-1 min-w-[120px] placeholder-neutral-600"
                   />
@@ -561,7 +559,7 @@ const handleSubmit = async (e) => {
                 "Pubblicazione in corso..."
               ) : (
                 <>
-                  <FaFire size={13} /> Pubblica Spark
+                  <FaFire size={13} /> Publish Spark
                 </>
               )}
             </button>

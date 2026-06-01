@@ -26,7 +26,7 @@ function LoversPreview({ lovers, loves }) {
   if (!loves || loves === 0)
     return (
       <span className="text-[9px] leading-tight text-right" style={{ color: "rgba(255,255,255,0.35)" }}>
-        Sii il primo ❤
+        Be the first to love
       </span>
     );
   return (
@@ -169,10 +169,10 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
             !
           </div>
           <p className="text-white text-sm font-semibold">
-            Immagine non disponibile
+            Image not available
           </p>
           <p className="text-neutral-500 text-xs mt-1 leading-relaxed">
-            Il sito potrebbe bloccare l'hotlinking.
+            Site may block hotlinking.
           </p>
         </div>
       )}
@@ -327,7 +327,7 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
                 transition: "transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
               }}
             />
-            {sparked ? "I'm loving it" : "Love it"}
+            {sparked ? "Loving it" : "Love it"}
           </button>
         </div>
 
