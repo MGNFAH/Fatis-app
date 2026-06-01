@@ -1,6 +1,6 @@
 const Spark = require("../models/Spark");
 const User = require("../models/User");
-const UserLove = require("../models/UserLove");
+const UserLove = require("../models/userLove");
 const cloudinary = require("cloudinary").v2;
 
 // Helper: formato spark uniforme
