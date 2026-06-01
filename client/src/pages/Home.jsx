@@ -58,7 +58,7 @@ export default function Home({ onSpark, onSelectImage, onSparksFetched }) {
     <main className="relative">
       {loading ? (
         <div className="flex items-center justify-center min-h-[60vh]">
-          <span className="text-white/30 text-sm">Caricamento spark...</span>
+          <span className="text-white/30 text-sm">Loading Sparks...</span>
         </div>
       ) : (
         <MasonryGrid
@@ -78,7 +78,7 @@ export default function Home({ onSpark, onSelectImage, onSparksFetched }) {
         }}
       >
         <FaFire size={15} />
-        Crea Spark
+        Create Spark
       </button>
 
       <style>{`

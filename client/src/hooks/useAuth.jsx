@@ -6,7 +6,7 @@ export function useAuth() {
 
   // Avviso se qualcuno usa useAuth fuori dall'AuthProvider
   if (!context) {
-    throw new Error("useAuth deve essere usato dentro <AuthProvider>");
+    throw new Error("useAuth must be used within an <AuthProvider>");
   }
 
   return context;

@@ -75,7 +75,7 @@ function CollectionModal({ collection, onClose }) {
 
         {sparks.length === 0 ? (
           <p className="text-white/30 text-sm text-center py-10">
-            Nessuno spark in questa collezione.
+            No spark in this collection.
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -121,10 +121,10 @@ function CreateCollectionModal({ onClose, onCreate }) {
         style={{ background: "#111" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-white font-bold text-lg">Nuova collezione</h2>
+        <h2 className="text-white font-bold text-lg">New collection</h2>
 
         <div className="flex flex-col gap-1">
-          <label className="text-white/50 text-xs uppercase tracking-wider">Nome *</label>
+          <label className="text-white/50 text-xs uppercase tracking-wider">Collection name *</label>
           <input
             autoFocus
             value={name}
@@ -165,7 +165,7 @@ function CreateCollectionModal({ onClose, onCreate }) {
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity disabled:opacity-40"
             style={{ background: "#E8000D" }}
           >
-            {loading ? "Creando..." : "Crea"}
+            {loading ? "Creating..." : "Create"}
           </button>
         </div>
       </form>
@@ -260,7 +260,7 @@ export default function Collections() {
             <h1 className="text-white font-bold text-2xl">Le mie collezioni</h1>
             <p className="text-white/40 text-sm mt-0.5">
               {collections.length}{" "}
-              {collections.length === 1 ? "collezione" : "collezioni"}
+              {collections.length === 1 ? "collection" : "collections"}
             </p>
           </div>
           <button
@@ -333,15 +333,15 @@ export default function Collections() {
             <span className="text-5xl">✦</span>
             <p className="text-sm">
               {filter === "all"
-                ? "Nessuna collezione ancora. Creane una!"
-                : "Nessuna collezione in questa categoria."}
+                ? "No collection yet. Create one now!"
+                : "No collection in this category."}
             </p>
             {filter === "all" && (
               <button
                 onClick={() => setShowCreateModal(true)}
                 className="btn btn-outline btn-xs border-white/10 text-white/40 hover:border-white/30 mt-2"
               >
-                Crea la prima collezione
+                Create first collection now
               </button>
             )}
           </div>

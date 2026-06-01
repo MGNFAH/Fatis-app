@@ -22,7 +22,7 @@ export default function Login() {
     setError("");
 
     if (!form.email || !form.password) {
-      setError("Compila tutti i campi.");
+      setError("Please fill in all fields.");
       return;
     }
 
@@ -75,7 +75,7 @@ export default function Login() {
               type="button"
               className="text-neutral-500 hover:text-neutral-300 text-xs transition"
             >
-              Password dimenticata?
+              Forgot password?
             </button>
           </div>
           <div className="relative">
@@ -102,7 +102,7 @@ export default function Login() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-300 transition text-xs"
             >
-              {showPassword ? "Nascondi" : "Mostra"}
+              {showPassword ? "Hide" : "Show"}
             </button>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function Login() {
             transition: "all 250ms cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
-          {isLoading ? "Accesso in corso..." : "Accedi"}
+          {isLoading ? "Logging in..." : "Login"}
         </button>
 
         {/* Divider */}
@@ -143,7 +143,7 @@ export default function Login() {
 
         {/* Link a Register */}
         <p className="text-center text-neutral-500 text-sm">
-          Non hai un account?{" "}
+          No account yet?{" "}
           <Link
             to="/register"
             className="font-semibold transition"

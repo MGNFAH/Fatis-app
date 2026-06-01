@@ -26,20 +26,20 @@ export default function Register() {
 
   const validate = () => {
     const newErrors = {};
-    if (!form.name.trim()) newErrors.name = "Inserisci il tuo nome.";
-    if (!form.username.trim()) newErrors.username = "Scegli un username.";
+    if (!form.name.trim()) newErrors.name = "Please enter your full name.";
+    if (!form.username.trim()) newErrors.username = "Choose a username.";
     else if (form.username.includes(" "))
-      newErrors.username = "Lo username non può contenere spazi.";
-    if (!form.email.trim()) newErrors.email = "Inserisci la tua email.";
+      newErrors.username = "Username cannot contain spaces.";
+    if (!form.email.trim()) newErrors.email = "Please enter your email.";
     else if (!/\S+@\S+\.\S+/.test(form.email))
-      newErrors.email = "Email non valida.";
-    if (!form.password) newErrors.password = "Inserisci una password.";
+      newErrors.email = "Invalid email address.";
+    if (!form.password) newErrors.password = "Please enter a password.";
     else if (form.password.length < 6)
-      newErrors.password = "Minimo 6 caratteri.";
+      newErrors.password = "Min 6 characters.";
     if (!form.confirmPassword)
-      newErrors.confirmPassword = "Conferma la password.";
+      newErrors.confirmPassword = "Confirm password.";
     else if (form.password !== form.confirmPassword)
-      newErrors.confirmPassword = "Le password non coincidono.";
+      newErrors.confirmPassword = "Passwords do not match.";
     return newErrors;
   };
 
@@ -61,7 +61,7 @@ const handleSubmit = async (e) => {
     setErrors({
       general:
         err.response?.data?.error ||
-        "Errore durante la registrazione. Riprova.",
+        "Registration error. Please try again.",
     });
   } finally {
     setIsLoading(false);
@@ -76,14 +76,14 @@ const handleSubmit = async (e) => {
 
   return (
     <AuthLayout
-      title="Crea il tuo account"
-      subtitle="Unisciti alla community di artisti Fatis"
+      title="Create your Fatis account"
+      subtitle="Join the Fatis community"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* Nome */}
         <div className="flex flex-col gap-1.5">
           <label className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
-            Nome completo
+            Full name
           </label>
           <input
             type="text"
@@ -238,7 +238,7 @@ const handleSubmit = async (e) => {
             transition: "all 250ms cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
-          {isLoading ? "Registrazione in corso..." : "Crea account"}
+          {isLoading ? "Registration..." : "Create account"}
         </button>
 
         {/* Divider */}
@@ -250,7 +250,7 @@ const handleSubmit = async (e) => {
 
         {/* Link a Login */}
         <p className="text-center text-neutral-500 text-sm">
-          Hai già un account?{" "}
+          Already have an account?{" "}
           <Link
             to="/login"
             className="font-semibold transition"

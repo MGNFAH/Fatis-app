@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 
 const PLACEHOLDERS = [
-  "Cerca Preraffaelliti...",
-  "Cerca Van Gogh...",
-  "Cerca paesaggi romantici...",
-  "Cerca natura morta...",
-  "Cerca Impressionismo...",
-  "Cerca Frida Kahlo...",
-  "Cerca arte simbolista...",
-  "Cerca ritratti rinascimentali...",
-  "Cerca surrealismo...",
-  "Cerca Hokusai...",
+  "Search Preraffael...",
+  "Search Van Gogh...",
+  "Search romantic...",
+  "Search nature...",
+  "Search Impression...",
+  "Search Frida Kahlo...",
+  "Search abstract...",
+  "Search Renaissance...",
+  "Search surreal...",
+  "Search Hokusai...",
 ];
 
 export function useRotatingPlaceholder(interval = 3000) {

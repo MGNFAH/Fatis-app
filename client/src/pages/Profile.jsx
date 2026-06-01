@@ -156,13 +156,13 @@ export default function Profile() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <p className="text-white/60">
-          Devi essere loggato per vedere il profilo.
+          You must be logged in to view your profile.
         </p>
         <button
           onClick={() => navigate("/login")}
           className="btn btn-primary btn-sm"
         >
-          Vai al login
+          Login
         </button>
       </div>
     );
@@ -172,7 +172,7 @@ export default function Profile() {
     const file = e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setSaveError("Carica un file immagine valido.");
+      setSaveError("Please upload a valid image file.");
       return;
     }
     const reader = new FileReader();
@@ -192,7 +192,7 @@ export default function Profile() {
       updateProfile(res.data);
       setIsEditing(false); // ← fix del bug
     } catch (err) {
-      setSaveError("Errore nel salvataggio. Riprova.");
+      setSaveError("Error saving. Please try again later.");
       console.error(err);
     } finally {
       setIsSaving(false);
@@ -238,7 +238,7 @@ export default function Profile() {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  aria-label="Cambia foto profilo"
+                  aria-label="Change profile photo"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -315,7 +315,7 @@ export default function Profile() {
                 onClick={() => setIsEditing(true)}
                 className="text-xs text-white/40 hover:text-white transition-colors"
               >
-                Modifica
+                Edit
               </button>
             )}
           </div>
@@ -332,7 +332,7 @@ export default function Profile() {
             <p className="text-white/60 text-sm leading-relaxed">
               {user.bio || (
                 <span className="text-white/25 italic">
-                  Nessuna bio ancora. Clicca Modifica per raccontarti!
+                  Nessuna bio ancora. Click Edit to share your story!
                 </span>
               )}
             </p>
@@ -376,7 +376,7 @@ export default function Profile() {
             <SparkGrid
               sparks={mySparks}
               loading={loadingMy}
-              emptyMessage="Non hai ancora caricato nessuno spark."
+              emptyMessage="No sparks uploaded yet."
               onDelete={handleDeleteSpark}
             />
           )}
@@ -384,7 +384,7 @@ export default function Profile() {
             <SparkGrid
               sparks={lovedSparks}
               loading={loadingLoved}
-              emptyMessage="Non hai ancora messo love a nessuno spark."
+              emptyMessage="No sparks loved yet."
             />
           )}
         </div>
@@ -434,7 +434,7 @@ export default function Profile() {
                 {isSaving ? (
                   <span className="loading loading-spinner loading-xs" />
                 ) : (
-                  "Salva modifiche"
+                  "Save changes"
                 )}
               </button>
             </div>
@@ -444,7 +444,7 @@ export default function Profile() {
             onClick={handleLogout}
             className="btn btn-outline btn-sm border-red-800/50 text-red-400 hover:bg-red-900/20 hover:border-red-600"
           >
-            Esci dall'account
+            Logout
           </button>
         )}
       </div>
