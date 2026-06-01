@@ -5,6 +5,31 @@ import LoveGauge from "./LoveGauge";
 import SearchBar from "./SearchBar";
 import { useAuth } from "../hooks/useAuth";
 
+// Logo Fatis — wordmark SVG inline
+function FatisLogo() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 90 28"
+      width="90"
+      height="28"
+      aria-label="Fatis"
+      fill="none"
+    >
+      {/* F */}
+      <path d="M4 4h12v3H7.5v5.5H15v3H7.5V24H4V4Z" fill="white" />
+      {/* A */}
+      <path d="M22 24h-3.5l6-20h3.5l6 20h-3.5l-1.3-4.5h-6L22 24Zm3.5-12.5-2 6h4l-2-6Z" fill="white" />
+      {/* T */}
+      <path d="M40 4h13v3h-4.75V24h-3.5V7H40V4Z" fill="white" />
+      {/* I */}
+      <path d="M57 4h3.5v20H57V4Z" fill="white" />
+      {/* S */}
+      <path d="M66 18.5c0 1.8 1.2 3 3 3s3-1 3-2.5c0-1.6-1-2.3-3.5-3.2C65.5 14.7 64 13 64 10.5 64 7.5 66.2 5.5 69.5 5.5c3.2 0 5.2 1.9 5.3 5h-3.4c-.1-1.5-.8-2.4-1.9-2.4-1 0-1.8.7-1.8 1.9 0 1.3.9 1.9 3.3 2.8 3 1.1 4.5 2.7 4.5 5.3 0 3.2-2.3 5.4-5.7 5.4-3.5 0-5.7-2.1-5.8-5.5H66Z" fill="white" />
+    </svg>
+  );
+}
+
 // Componente avatar riutilizzabile
 function NavAvatar({ user }) {
   const initials = user?.name
@@ -38,10 +63,8 @@ export default function Navbar({ sparkCount, onSelectImage }) {
   const prevCount = useRef(sparkCount);
   const dropdownRef = useRef(null);
 
-  // Streak reale dal backend tramite il contesto utente
   const streakDays = user?.streakDays ?? 0;
 
-  // Animazione bump quando sparkCount aumenta
   useEffect(() => {
     if (sparkCount > prevCount.current) {
       setStreakBump(true);
@@ -50,7 +73,6 @@ export default function Navbar({ sparkCount, onSelectImage }) {
     }
   }, [sparkCount]);
 
-  // Chiude il dropdown cliccando fuori
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -80,8 +102,8 @@ export default function Navbar({ sparkCount, onSelectImage }) {
     >
       {/* SINISTRA — Logo + pill */}
       <div className="flex items-center gap-3">
-        <Link to="/" className="bg-white rounded-full p-2">
-          <div className="w-6 h-6 bg-black rounded-full"></div>
+        <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <FatisLogo />
         </Link>
 
         <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/10">
