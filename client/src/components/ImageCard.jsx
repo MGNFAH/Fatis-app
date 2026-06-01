@@ -67,19 +67,37 @@ function TrendingBadge({ loves }) {
 }
 
 const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
-  const [sparked, setSparked] = useState(false);
+  // Fix Problema 3: inizializza sparked dallo stato reale restituito dal backend
+  const [sparked, setSparked] = useState(image.isLoved ?? false);
   const [animating, setAnimating] = useState(false);
   const [glowing, setGlowing] = useState(false);
   const [bouncing, setBouncing] = useState(false);
   const [viewed, setViewed] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [viewBouncing, setViewBouncing] = useState(false);
+  // Fix: anche il ref deve partire dal valore reale
+  const sparkedRef = useRef(image.isLoved ?? false);
   const { playLove, playUnlove } = useHeartSound();
-  const sparkedRef = useRef(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
-  const localLoves = sparked ? image.loves + 1 : image.loves;
+
+  // Fix: riallinea sparked se l'immagine cambia (nuovo fetch o navigazione)
+  useEffect(() => {
+    const initial = image.isLoved ?? false;
+    setSparked(initial);
+    sparkedRef.current = initial;
+  }, [image.id, image.isLoved]);
+
+  // Fix Problema 1 (lato card): usa i loves reali dal backend senza sommare +1 ottimistico
+  // Il numero esatto è già nel backend; l'UI ottimistica si aggiorna solo sullo stato sparked
+  const localLoves = sparked
+    ? image.isLoved
+      ? image.loves          // era già loved → numero invariato
+      : image.loves + 1      // love appena aggiunto → +1 ottimistico
+    : image.isLoved
+      ? image.loves - 1      // love appena rimosso → -1 ottimistico
+      : image.loves;         // mai loved → numero invariato
   const localLovers = sparked ? ["tu", ...(image.lovers || [])] : image.lovers || [];
   const localViews = viewed ? image.views + 1 : image.views;
 
@@ -88,44 +106,40 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
   }, [image.url]);
 
   const handleLove = async (e) => {
-  e?.stopPropagation();
-  if (!user) {
-    navigate("/login");
-    return;
-  }
-
-  const newSparked = !sparkedRef.current;
-  sparkedRef.current = newSparked;
-  setSparked(newSparked);
-
-  // Animazioni — basate su newSparked, non su sparkedRef (già aggiornato)
-  if (newSparked) {
-    setAnimating(true); setTimeout(() => setAnimating(false), 400);
-    setGlowing(true);   setTimeout(() => setGlowing(false), 700);
-    setBouncing(true);  setTimeout(() => setBouncing(false), 500);
-    onSpark?.();
-    playLove();
-  } else {
-    playUnlove();
-  }
-
-  // Chiama API in background (optimistic UI)
-  try {
-    if (newSparked) {
-      await api.post(`/api/sparks/${image.id}/love`);
-    } else {
-      await api.delete(`/api/sparks/${image.id}/love`);
+    e?.stopPropagation();
+    if (!user) {
+      navigate("/login");
+      return;
     }
-  } catch (err) {
-    // Rollback se l'API fallisce
-    sparkedRef.current = !newSparked;
-    setSparked(!newSparked);
-    console.error("Errore love:", err);
-  }
-};
-  
 
-  // Espone handleLove a MasonryGrid tramite ref
+    const newSparked = !sparkedRef.current;
+    sparkedRef.current = newSparked;
+    setSparked(newSparked);
+
+    if (newSparked) {
+      setAnimating(true); setTimeout(() => setAnimating(false), 400);
+      setGlowing(true);   setTimeout(() => setGlowing(false), 700);
+      setBouncing(true);  setTimeout(() => setBouncing(false), 500);
+      onSpark?.();
+      playLove();
+    } else {
+      playUnlove();
+    }
+
+    try {
+      if (newSparked) {
+        await api.post(`/api/sparks/${image.id}/love`);
+      } else {
+        await api.delete(`/api/sparks/${image.id}/love`);
+      }
+    } catch (err) {
+      // Rollback se l'API fallisce
+      sparkedRef.current = !newSparked;
+      setSparked(!newSparked);
+      console.error("Errore love:", err);
+    }
+  };
+
   useImperativeHandle(ref, () => ({ triggerLove: handleLove }));
 
   return (
@@ -209,7 +223,7 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
           <TrendingBadge loves={image.loves} />
         </div>
       )}
-      {/* Cuore fisso — visibile solo su touch device, stesso angolo del pulsante hover */}
+
       <div
         className="absolute top-2 right-2 z-10 touch-love-btn"
         onClick={(e) => {
@@ -243,6 +257,7 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
           {sparked ? "Loving" : "Love"}
         </div>
       </div>
+
       <div
         className="absolute inset-0 flex flex-col justify-between p-3"
         style={{

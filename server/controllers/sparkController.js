@@ -7,9 +7,7 @@ const { fn, col, literal } = require("sequelize");
 
 // Formatta uno spark arricchendolo con il conteggio reale dei love
 const formatSpark = (spark, lovedByUserId = null) => {
-  // spark.dataValues.loveCount viene da una subquery o da include con count
   const loves = parseInt(spark.dataValues.loveCount ?? 0, 10);
-  // isLoved: true se lovedByUserId è nell'elenco dei lover (viene passato dall'endpoint)
   const isLoved = spark.dataValues.isLoved ?? false;
 
   return {
@@ -37,21 +35,18 @@ const formatSpark = (spark, lovedByUserId = null) => {
 };
 
 // Helper: carica tutti gli spark con conteggio love reale
-// Se userId è passato, aggiunge anche il flag isLoved per quell'utente
 async function fetchSparksWithLoves(where = {}, userId = null) {
   const sparks = await Spark.findAll({
     where,
     order: [["createdAt", "DESC"]],
     attributes: {
       include: [
-        // Subquery: conta i UserLove per ogni spark
         [
           literal(
             `(SELECT COUNT(*) FROM "UserLoves" WHERE "UserLoves"."sparkId" = "Spark"."id")`
           ),
           "loveCount",
         ],
-        // Subquery: verifica se l'utente corrente ha già amato questo spark
         userId
           ? [
               literal(
@@ -66,7 +61,6 @@ async function fetchSparksWithLoves(where = {}, userId = null) {
   });
 
   return sparks.map((s) => {
-    // Normalizza isLoved da conteggio (0/1) a boolean
     s.dataValues.isLoved = parseInt(s.dataValues.isLoved, 10) > 0;
     return formatSpark(s, userId);
   });
@@ -75,7 +69,6 @@ async function fetchSparksWithLoves(where = {}, userId = null) {
 // READ - Tutti gli spark (feed pubblico)
 const getSparks = async (req, res) => {
   try {
-    // req.user potrebbe essere null se non autenticato (route pubblica)
     const userId = req.user?.id ?? null;
     const sparks = await fetchSparksWithLoves({}, userId);
     res.json(sparks);
@@ -162,7 +155,7 @@ const deleteSpark = async (req, res) => {
 
 // ---- LOVE ----
 
-// Aggiungi love — restituisce il conteggio aggiornato
+// Aggiungi love
 const addLove = async (req, res) => {
   try {
     const spark = await Spark.findByPk(req.params.id);
@@ -190,7 +183,7 @@ const addLove = async (req, res) => {
   }
 };
 
-// Rimuovi love — restituisce il conteggio aggiornato
+// Rimuovi love
 const removeLove = async (req, res) => {
   try {
     const love = await UserLove.findOne({
@@ -254,6 +247,19 @@ const getLovedSparks = async (req, res) => {
   }
 };
 
+// Conteggio totale dei love dati dall'utente loggato (per la LoveGauge)
+const getMyLoveCount = async (req, res) => {
+  try {
+    const count = await UserLove.count({
+      where: { userId: req.user.id },
+    });
+    res.json({ loveCount: count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Errore nel conteggio dei love" });
+  }
+};
+
 module.exports = {
   getSparks,
   getMySparks,
@@ -264,4 +270,5 @@ module.exports = {
   removeLove,
   getLovedSparks,
   getUploadSignature,
+  getMyLoveCount,
 };
