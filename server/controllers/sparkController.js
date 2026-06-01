@@ -144,7 +144,27 @@ const addLove = async (req, res) => {
     res.status(500).json({ error: "Errore nell'aggiunta del love" });
   }
 };
-
+const getUploadSignature = async (req, res) => {
+  try {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const folder = `sparks/${req.user.id}`;
+    const paramsToSign = { timestamp, folder };
+    const signature = cloudinary.utils.api_sign_request(
+      paramsToSign,
+      process.env.CLOUDINARY_API_SECRET,
+    );
+    res.json({
+      signature,
+      timestamp,
+      folder,
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey: process.env.CLOUDINARY_API_KEY,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Errore nella generazione della firma" });
+  }
+};
 // Rimuovi love
 const removeLove = async (req, res) => {
   try {
@@ -192,4 +212,5 @@ module.exports = {
   addLove,
   removeLove,
   getLovedSparks,
+  getUploadSignature,
 };
