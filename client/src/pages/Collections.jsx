@@ -71,23 +71,23 @@ function CollectionModal({ collection, onClose }) {
           <button onClick={onClose} className="text-white/40 hover:text-white text-xl">✕</button>
         </div>
 
-        {collection.Sparks?.length === 0 ? (
-          <p className="text-white/30 text-sm text-center py-10">
-            Nessuno spark in questa collezione.
-          </p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {(collection.Sparks || []).map((spark) => (
-              <img
-                key={spark.id}
-                src={spark.url || spark.imageUrl}
-                alt={spark.title}
-                className="w-full aspect-square object-cover rounded-lg"
-                const sparks = collection.Sparks || collection.sparks || [];
-              />
-            ))}
-          </div>
-        )}
+        {{collection.Sparks?.length === 0 ? (
+  <p className="text-white/30 text-sm text-center py-10">
+    Nessuno spark in questa collezione.
+  </p>
+) : (
+  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+    {(collection.Sparks || []).map((spark) => (
+      <img
+        key={spark.id}
+        src={spark.url || spark.imageUrl}
+        alt={spark.title}
+        className="w-full aspect-square object-cover rounded-lg"
+      />
+    ))}
+  </div>
+)}
+
       </div>
     </div>
   );
@@ -211,7 +211,7 @@ export default function Collections() {
       const res = await api.get(`/api/collections/${collection.id}`);
       setSelectedCollection(res.data); // ha già .sparks dentro
     } catch (err) {
-      setSelectedCollection({ ...collection, sparks: [] });
+      setSelectedCollection({ ...collection, Sparks: [] });
     } finally {
       setLoadingDetail(false);
     }
