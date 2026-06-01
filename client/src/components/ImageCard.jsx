@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react"; import { FaHeart, FaEye } from "react-icons/fa";
+import { createPortal } from "react-dom";
 import { useHeartSound } from "../hooks/useHeartSound";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router";
@@ -433,12 +434,14 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
           </div>
         </div>
       </div>
-      {showSaveModal && (
-        <SaveToCollectionModal
-          spark={image}
-          onClose={() => setShowSaveModal(false)}
-        />
-      )}
+      {showSaveModal &&
+        createPortal(
+          <SaveToCollectionModal
+            spark={image}
+            onClose={() => setShowSaveModal(false)}
+          />,
+          document.body,
+        )}
     </div>
   );
 });
