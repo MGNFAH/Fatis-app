@@ -264,7 +264,7 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
         onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
       >
         <div
-          className="flex justify-end"
+          className="flex justify-end gap-2"
           style={{
             transform: "translateY(-6px)",
             opacity: 0,
@@ -295,7 +295,7 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
             style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}
           >
             <FaBookmark style={{ fontSize: "11px" }} />
-            Save
+            Save it
           </button>
 
           <button
