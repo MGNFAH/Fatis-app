@@ -1,6 +1,7 @@
 const Spark = require("../models/Spark");
 const UserLove = require("../models/userLove");
 const User = require("../models/User");
+const cloudinary = require("cloudinary").v2;
 
 const formatSpark = (spark) => ({
   id: spark.id,
