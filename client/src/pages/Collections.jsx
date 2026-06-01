@@ -26,13 +26,14 @@ function CollectionCover({ sparks = [] }) {
 
 // ── CollectionCard ───────────────────────────────────────────────────────────
 function CollectionCard({ collection, onClick }) {
+  const sparks = collection.Sparks || [];
   return (
     <button
       onClick={onClick}
       className="flex flex-col gap-2 text-left group"
     >
       <div className="relative overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02]">
-        <CollectionCover sparks={collection.Sparks || []} />
+        <CollectionCover sparks={sparks} />
         {!collection.isPublic && (
           <span className="absolute top-2 right-2 text-[10px] bg-black/60 text-white/70 px-2 py-0.5 rounded-full backdrop-blur-sm">
             🔒 Privata
@@ -42,7 +43,7 @@ function CollectionCard({ collection, onClick }) {
       <div className="px-0.5">
         <p className="text-white text-sm font-semibold truncate">{collection.name}</p>
         <p className="text-white/40 text-xs">
-          {collection.Sparks?.length || 0} spark
+          {sparks.length} spark
         </p>
       </div>
     </button>
@@ -51,7 +52,7 @@ function CollectionCard({ collection, onClick }) {
 
 // ── CollectionModal ──────────────────────────────────────────────────────────
 function CollectionModal({ collection, onClose }) {
-   const sparks = collection.Sparks || collection.sparks || [];
+  const sparks = collection.Sparks || collection.sparks || [];
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
@@ -72,23 +73,22 @@ function CollectionModal({ collection, onClose }) {
           <button onClick={onClose} className="text-white/40 hover:text-white text-xl">✕</button>
         </div>
 
-        {{collection.Sparks?.length === 0 ? (
-  <p className="text-white/30 text-sm text-center py-10">
-    Nessuno spark in questa collezione.
-  </p>
-) : (
-  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-    {(collection.Sparks || []).map((spark) => (
-      <img
-        key={spark.id}
-        src={spark.url || spark.imageUrl}
-        alt={spark.title}
-        className="w-full aspect-square object-cover rounded-lg"
-      />
-    ))}
-  </div>
-)}
-
+        {sparks.length === 0 ? (
+          <p className="text-white/30 text-sm text-center py-10">
+            Nessuno spark in questa collezione.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {sparks.map((spark) => (
+              <img
+                key={spark.id}
+                src={spark.url || spark.imageUrl}
+                alt={spark.title}
+                className="w-full aspect-square object-cover rounded-lg"
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -186,7 +186,6 @@ export default function Collections() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filter, setFilter] = useState("all");
 
-  // Carica le collezioni al mount
   useEffect(() => {
     if (!user) return;
     fetchCollections();
@@ -205,12 +204,11 @@ export default function Collections() {
     }
   };
 
-  // Apre la modal con il dettaglio completo (spark inclusi)
   const handleOpenCollection = async (collection) => {
     try {
       setLoadingDetail(true);
       const res = await api.get(`/api/collections/${collection.id}`);
-      setSelectedCollection(res.data); // ha già .sparks dentro
+      setSelectedCollection(res.data);
     } catch (err) {
       setSelectedCollection({ ...collection, Sparks: [] });
     } finally {
