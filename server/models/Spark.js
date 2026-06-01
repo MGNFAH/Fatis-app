@@ -31,8 +31,4 @@ const Spark = sequelize.define("Spark", {
     allowNull: false,
   },
 });
-
-const User = require("./User");
-Spark.belongsTo(User, { foreignKey: "userId" });
-
 module.exports = Spark;
