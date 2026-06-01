@@ -4,7 +4,7 @@ const { sequelize } = require("../config/db");
 const User = sequelize.define("User", {
   name: {
     type: DataTypes.STRING,
-    allowNull: true, // opzionale: alcuni potrebbero non averlo
+    allowNull: true,
   },
   username: {
     type: DataTypes.STRING,
@@ -31,6 +31,14 @@ const User = sequelize.define("User", {
   level: {
     type: DataTypes.INTEGER,
     defaultValue: 1,
+  },
+  streakDays: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  lastActiveDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
   },
 });
 
