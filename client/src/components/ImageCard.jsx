@@ -67,7 +67,6 @@ function TrendingBadge({ loves }) {
 }
 
 const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
-  // Fix Problema 3: inizializza sparked dallo stato reale restituito dal backend
   const [sparked, setSparked] = useState(image.isLoved ?? false);
   const [animating, setAnimating] = useState(false);
   const [glowing, setGlowing] = useState(false);
@@ -75,29 +74,25 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
   const [viewed, setViewed] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [viewBouncing, setViewBouncing] = useState(false);
-  // Fix: anche il ref deve partire dal valore reale
   const sparkedRef = useRef(image.isLoved ?? false);
   const { playLove, playUnlove } = useHeartSound();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
 
-  // Fix: riallinea sparked se l'immagine cambia (nuovo fetch o navigazione)
   useEffect(() => {
     const initial = image.isLoved ?? false;
     setSparked(initial);
     sparkedRef.current = initial;
   }, [image.id, image.isLoved]);
 
-  // Fix Problema 1 (lato card): usa i loves reali dal backend senza sommare +1 ottimistico
-  // Il numero esatto è già nel backend; l'UI ottimistica si aggiorna solo sullo stato sparked
   const localLoves = sparked
     ? image.isLoved
-      ? image.loves          // era già loved → numero invariato
-      : image.loves + 1      // love appena aggiunto → +1 ottimistico
+      ? image.loves
+      : image.loves + 1
     : image.isLoved
-      ? image.loves - 1      // love appena rimosso → -1 ottimistico
-      : image.loves;         // mai loved → numero invariato
+      ? image.loves - 1
+      : image.loves;
   const localLovers = sparked ? ["tu", ...(image.lovers || [])] : image.lovers || [];
   const localViews = viewed ? image.views + 1 : image.views;
 
@@ -133,7 +128,6 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
         await api.delete(`/api/sparks/${image.id}/love`);
       }
     } catch (err) {
-      // Rollback se l'API fallisce
       sparkedRef.current = !newSparked;
       setSparked(!newSparked);
       console.error("Errore love:", err);
@@ -301,7 +295,7 @@ const ImageCard = forwardRef(function ImageCard({ image, onSpark }, ref) {
             style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}
           >
             <FaBookmark style={{ fontSize: "11px" }} />
-            Salva
+            Save
           </button>
 
           <button
