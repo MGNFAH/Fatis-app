@@ -15,47 +15,73 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router";
 
+// ─── Mini card per opere correlate ───────────────────────────────────────
 function MiniCard({ img, onClick }) {
-  const [imgError, setImgError] = useState(false);
-  useEffect(() => { setImgError(false); }, [img.url]);
-  return (
+ const [imgError, setImgError] = useState(false);
+
+ useEffect(() => {
+  setImgError(false);
+ }, [img.url]);
+
+ return (
+  <button
+   onClick={() => onClick(img)}
+   className="group relative overflow-hidden rounded-xl flex-shrink-0"
+   style={{ width: 130, height: 100 }}
+  >
+   {imgError ? (
     <div
-      onClick={() => onClick(img)}
-      className="group relative overflow-hidden rounded-xl flex-shrink-0 cursor-pointer"
-      style={{ width: 130, height: 100 }}
+     className="w-full h-full rounded-xl flex flex-col items-center justify-center"
+     style={{
+      background: "rgba(255,255,255,0.03)",
+      border: "1px solid rgba(255,255,255,0.06)",
+     }}
     >
-      {imgError ? (
-        <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-neutral-600 text-xs">
-          N/A
-        </div>
-      ) : (
-        <>
-          <img
-            src={img.url}
-            alt={img.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            onError={() => setImgError(true)}
-            onLoad={() => setImgError(false)}
-          />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-end p-2">
-            <p className="text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity line-clamp-2">
-              {img.title}
-            </p>
-          </div>
-        </>
-      )}
+     <p className="text-neutral-500 text-[10px] text-center px-1 leading-tight">Img errata</p>
     </div>
-  );
+   ) : (
+    <>
+     <img
+      src={img.url}
+      alt={img.title}
+      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+      onError={() => setImgError(true)}
+      onLoad={() => setImgError(false)}
+     />
+     <div
+      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+      style={{ background: "rgba(0,0,0,0.45)" }}
+     />
+     <p
+      className="absolute bottom-0 left-0 right-0 px-2 py-1.5 text-white text-xs font-semibold
+      translate-y-full group-hover:translate-y-0 transition-transform duration-200"
+      style={{
+       background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)",
+      }}
+     >
+      {img.title}
+     </p>
+    </>
+   )}
+  </button>
+ );
 }
 
+// ─── Sezione scroll orizzontale ──────────────────────────────────────────
 function HorizontalScroll({ title, icon, items, onSelect }) {
   if (!items?.length) return null;
   return (
-    <div className="flex flex-col gap-3">
-      <p className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
-        {icon}&nbsp;&nbsp;{title}
-      </p>
-      <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-1.5">
+        <span className="text-[#E8000D]">{icon}</span>
+        <span className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
+          {title}
+        </span>
+      </div>
+      <div
+        className="flex gap-3 overflow-x-auto pb-1"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
         {items.map((img) => (
           <MiniCard key={img.id} img={img} onClick={onSelect} />
         ))}
@@ -64,26 +90,29 @@ function HorizontalScroll({ title, icon, items, onSelect }) {
   );
 }
 
+// ─── Componente principale ───────────────────────────────────────────────
 export default function ImageModal({ image, onClose, allImages = [] }) {
-  const [loved, setLoved] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [comment, setComment] = useState("");
-  const [mainImgError, setMainImgError] = useState(false);
-  const [comments, setComments] = useState(image.comments || []);
-  const [current, setCurrent] = useState(image);
-  const { user } = useAuth();
-  const navigate = useNavigate();
+const [loved, setLoved] = useState(false);
+const [menuOpen, setMenuOpen] = useState(false);
+const [saved, setSaved] = useState(false);
+const [comment, setComment] = useState("");
+const [mainImgError, setMainImgError] = useState(false);
+const [comments, setComments] = useState(image.comments || []);
+const [current, setCurrent] = useState(image);
+const { user } = useAuth();
+const navigate = useNavigate();
 
-  useEffect(() => { setMainImgError(false); }, [current.url]);
+useEffect(() => {
+  setMainImgError(false);
+}, [current.url]);
 
-  const handleSelect = (img) => {
-    setCurrent(img);
-    setLoved(false);
-    setSaved(false);
-    setComments(img.comments || []);
-    setComment("");
-  };
+const handleSelect = (img) => {
+  setCurrent(img);
+  setLoved(false);
+  setSaved(false);
+  setComments(img.comments || []);
+  setComment("");
+};
 
   const authorWorks = allImages.filter(
     (img) => img.author === current.author && img.id !== current.id,
@@ -100,44 +129,59 @@ export default function ImageModal({ image, onClose, allImages = [] }) {
   const handleComment = (e) => {
     e.preventDefault();
     if (!comment.trim()) return;
-    setComments([...comments, { author: "you", text: comment.trim() }]);
+    setComments([...comments, { author: "tu", text: comment.trim() }]);
     setComment("");
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3 md:p-5"
       onClick={onClose}
     >
       <div
-        className="relative flex w-full max-w-5xl rounded-2xl overflow-hidden"
-        style={{
-          background: "#141414",
-          border: "1px solid rgba(255,255,255,0.06)",
-          maxHeight: "92vh",
-        }}
+        className="bg-neutral-900 rounded-2xl overflow-hidden w-full flex flex-col md:flex-row"
+        style={{ maxWidth: "min(1200px, 96vw)", maxHeight: "94vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ── Left: image ── */}
+        {/* ── Immagine sinistra ── */}
         <div
-          className="flex items-center justify-center flex-shrink-0 bg-black"
-          style={{ width: "55%", minHeight: 400 }}
+          className="bg-black flex items-center justify-center flex-shrink-0 relative"
+          style={{ width: "min(55%, 660px)", minHeight: 400 }}
         >
           {mainImgError ? (
-            <div className="flex flex-col items-center gap-3 p-8 text-center">
-              <span className="text-4xl">!</span>
-              <p className="text-white/70 font-semibold">Image not available</p>
-              <p className="text-white/40 text-sm">
-                The site may block hotlinking or the image URL is no longer valid.
+            <div
+              className="w-full h-full flex flex-col items-center justify-center px-6 py-10 text-center"
+              style={{ minHeight: 400 }}
+            >
+              <div
+                className="mb-4 rounded-full flex items-center justify-center"
+                style={{
+                  width: 64,
+                  height: 64,
+                  background: "rgba(232,0,13,0.12)",
+                  color: "#E8000D",
+                  fontSize: 26,
+                  fontWeight: 700,
+                }}
+              >
+                !
+              </div>
+              <p className="text-white text-lg font-bold">
+                Immagine non disponibile
+              </p>
+              <p className="text-neutral-500 text-sm mt-2 leading-relaxed max-w-sm">
+                Il sito potrebbe bloccare l&apos;hotlinking o l&apos;URL
+                dell&apos;immagine non è più valido.
               </p>
               {current.sourcePageUrl && (
                 <a
                   href={current.sourcePageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#E8000D] text-sm hover:underline"
+                  className="mt-4 flex items-center gap-2 text-sm"
+                  style={{ color: "#E8000D" }}
                 >
-                  Open source page →
+                  Apri pagina sorgente<span className="text-[#E8000D]">→</span>
                 </a>
               )}
               <button
@@ -149,185 +193,264 @@ export default function ImageModal({ image, onClose, allImages = [] }) {
                   transition: "all 200ms ease",
                 }}
               >
-                Retry
+                Riprova
               </button>
             </div>
           ) : (
             <img
-              src={current.url || current.imageUrl}
+              src={current.url}
               alt={current.title}
               className="w-full h-full object-contain"
+              style={{ maxHeight: "94vh" }}
               onError={() => setMainImgError(true)}
               onLoad={() => setMainImgError(false)}
             />
           )}
         </div>
 
-        {/* ── Right panel ── */}
-        <div className="flex flex-col flex-1 overflow-hidden">
-          {/* Scrollable */}
-          <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-5">
-            {/* Author header */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+        {/* ── Pannello destra ── */}
+        <div
+          className="flex-1 flex flex-col min-w-0"
+          style={{ maxHeight: "94vh" }}
+        >
+          {/* Scrollabile */}
+          <div
+            className="flex-1 overflow-y-auto p-6 flex flex-col gap-5"
+            style={{
+              scrollbarWidth: "thin",
+              scrollbarColor: "#3f3f3f transparent",
+            }}
+          >
+            {/* Header autore */}
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 min-w-0">
                 {current.avatar && (
                   <img
                     src={current.avatar}
                     alt={current.author}
-                    className="w-9 h-9 rounded-full object-cover"
+                    className="w-9 h-9 rounded-full object-cover border border-neutral-700 flex-shrink-0"
                   />
                 )}
-                <div>
-                  <p className="text-white font-semibold text-sm">@{current.author}</p>
+                <div className="min-w-0">
+                  <p className="text-white font-semibold text-sm truncate">
+                    @{current.author}
+                  </p>
                   {current.location && (
-                    <p className="text-neutral-500 text-xs">{current.location}</p>
+                    <p className="text-neutral-500 text-xs truncate">
+                      {current.location}
+                    </p>
                   )}
                 </div>
               </div>
-              <div className="relative">
+
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="relative">
+                  <button
+                    onClick={() => setMenuOpen(!menuOpen)}
+                    className="text-neutral-400 hover:text-white p-2 rounded-lg hover:bg-neutral-800 transition"
+                  >
+                    <FaEllipsisH size={14} />
+                  </button>
+                  {menuOpen && (
+                    <div className="absolute right-0 mt-1 w-52 bg-neutral-800 rounded-xl shadow-xl z-10 overflow-hidden text-sm">
+                      <button
+                        onClick={() => {
+                         const urlToShare = `${window.location.origin}?spark=${current.id}`;
+                         navigator.clipboard.writeText(urlToShare);
+                          setMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-white transition flex items-center gap-2"
+                      >
+                        <FaLink size={12} /> Condividi spark
+                      </button>
+                      <button
+                        onClick={() => setMenuOpen(false)}
+                        className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-neutral-300 transition flex items-center gap-2"
+                      >
+                        <FaUser size={12} /> Vedi profilo di @{current.author}
+                      </button>
+                      <button
+                        onClick={() => setMenuOpen(false)}
+                        className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-red-400 transition flex items-center gap-2"
+                      >
+                        <FaFlag size={12} /> Segnala contenuto
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <button
-                  onClick={() => setMenuOpen(!menuOpen)}
+                  onClick={onClose}
                   className="text-neutral-400 hover:text-white p-2 rounded-lg hover:bg-neutral-800 transition"
                 >
-                  <FaEllipsisH size={14} />
+                  <FaTimes size={14} />
                 </button>
-                {menuOpen && (
-                  <div
-                    className="absolute right-0 top-10 rounded-xl overflow-hidden z-10"
-                    style={{
-                      background: "#1e1e1e",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      minWidth: 200,
-                    }}
-                  >
-                    <button
-                      onClick={() => {
-                        const urlToShare = `${window.location.origin}?spark=${current.id}`;
-                        navigator.clipboard.writeText(urlToShare);
-                        setMenuOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-white transition flex items-center gap-2"
-                    >
-                      <FaLink size={12} /> Share spark
-                    </button>
-                    <button
-                      onClick={() => setMenuOpen(false)}
-                      className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-neutral-300 transition flex items-center gap-2"
-                    >
-                      <FaUser size={12} /> View @{current.author}'s profile
-                    </button>
-                    <button
-                      onClick={() => setMenuOpen(false)}
-                      className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-red-400 transition flex items-center gap-2"
-                    >
-                      <FaFlag size={12} /> Report content
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
 
-            {/* Title & details */}
-            <div className="flex flex-col gap-2">
-              <h2 className="text-white font-bold text-xl leading-tight">{current.title}</h2>
-              {current.caption && (
-                <p className="text-neutral-400 text-sm leading-relaxed">{current.caption}</p>
-              )}
-              {current.tags?.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {current.tags.map((tag, i) => (
-                    <span key={i} className="text-xs text-neutral-500">#{tag}</span>
-                  ))}
-                </div>
-              )}
-              {(current.sourcePageUrl || current.source) && (
-                <div className="flex items-center gap-1.5 text-xs text-neutral-600">
-                  <FaLink size={10} />
-                  <span>Source</span>
-                  <a
-                    href={current.sourcePageUrl || current.source}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-neutral-500 hover:text-white transition truncate"
+            <h2 className="text-white text-2xl font-bold leading-tight">
+              {current.title}
+            </h2>
+
+            {current.caption && (
+              <p className="text-neutral-300 text-sm leading-relaxed">
+                {current.caption}
+              </p>
+            )}
+
+            {current.tags?.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {current.tags.map((tag, i) => (
+                  <span
+                    key={i}
+                    className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full cursor-default"
+                    style={{
+                      background: "rgba(232,0,13,0.1)",
+                      color: "#E8000D",
+                      border: "1px solid rgba(232,0,13,0.2)",
+                    }}
                   >
-                    {current.sourcePageUrl || current.source}
-                  </a>
-                </div>
-              )}
+                    <FaHashtag size={9} />
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {(current.sourcePageUrl || current.source) && (
+              <div className="text-sm">
+                <span className="text-neutral-500 font-medium uppercase tracking-wider text-xs">
+                  Source
+                </span>
+                <a
+                  href={current.sourcePageUrl || current.source}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-yellow-400 hover:text-yellow-300 truncate mt-1 transition"
+                >
+                  <FaLink size={10} />
+                  {current.sourcePageUrl || current.source}
+                </a>
+              </div>
+            )}
+
+            <div className="border-t border-neutral-800" />
+
+            <div className="flex gap-6 text-sm text-neutral-400">
+              <span className="flex items-center gap-1.5">
+                <FaEye size={12} />
+                <strong className="text-white">
+                  {current.views?.toLocaleString()}
+                </strong>
+                visualizzazioni
+              </span>
+              <span className="flex items-center gap-1.5">
+                <FaHeart size={12} className="text-[#E8000D]" />
+                <strong className="text-white">
+                  {loved ? current.loves + 1 : current.loves}
+                </strong>
+                I'm loving it
+              </span>
             </div>
 
-            {/* Stats */}
-            <div className="flex items-center gap-4 text-xs text-neutral-500">
-              <span><FaEye className="inline mr-1" /><strong className="text-white">{current.views?.toLocaleString()}</strong> views</span>
-              <span><FaHeart className="inline mr-1" /><strong className="text-white">{loved ? current.loves + 1 : current.loves}</strong> loves</span>
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 onClick={() => {
-                  if (!user) { onClose(); navigate("/login"); return; }
+                  if (!user) {
+                    onClose();
+                    navigate("/login");
+                    return;
+                  }
                   setLoved(!loved);
                 }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full font-semibold text-sm ${
-                  loved
-                    ? "bg-[#E8000D] text-white"
-                    : "bg-white text-[#E8000D] hover:bg-[#E8000D] hover:text-white"
-                }`}
-                style={{ transition: "all 250ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full font-semibold text-sm
+                  ${loved ? "bg-[#E8000D] text-white" : "bg-white text-[#E8000D] hover:bg-[#E8000D] hover:text-white"}`}
+                style={{
+                  transition: "all 250ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                }}
               >
-                <FaHeart size={13} />
+                <FaHeart
+                  size={13}
+                  style={{
+                    transform: loved
+                      ? "scale(1.25) rotate(-10deg)"
+                      : "scale(1)",
+                    transition:
+                      "transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                />
                 {loved ? "I'm loving it!" : "Love it"}
               </button>
+
               <button
                 onClick={() => {
-                  if (!user) { onClose(); navigate("/login"); return; }
+                  if (!user) {
+                    onClose();
+                    navigate("/login");
+                    return;
+                  }
                   setSaved(!saved);
                 }}
-                className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-full font-semibold text-sm ${
-                  saved
-                    ? "bg-neutral-700 text-white"
-                    : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white"
-                }`}
-                style={{ transition: "all 250ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}
+                className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-full font-semibold text-sm
+                  ${
+                    saved
+                      ? "bg-neutral-700 text-white"
+                      : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white"
+                  }`}
+                style={{
+                  transition: "all 250ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                }}
               >
-                <FaBookmark size={13} />
+                <FaBookmark
+                  size={12}
+                  style={{
+                    transform: saved ? "scale(1.2)" : "scale(1)",
+                    transition:
+                      "transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                />
                 {saved ? "Saved" : "Add to collection"}
               </button>
             </div>
 
-            {/* Related works */}
+            <div className="border-t border-neutral-800" />
+
+            {/* Altre opere dell'autore */}
             <HorizontalScroll
-              title="More from this artist"
-              icon={<FaUser size={10} />}
+              title={`Altre opere di @${current.author}`}
+              icon={<FaUser size={11} />}
               items={authorWorks}
               onSelect={handleSelect}
             />
+
+            {/* Suggeriti per tag */}
             <HorizontalScroll
-              title="Similar sparks"
-              icon={<FaFire size={10} />}
+              title="Potrebbe piacerti"
+              icon={<FaFire size={11} />}
               items={suggested}
               onSelect={handleSelect}
             />
 
             {(authorWorks.length > 0 || suggested.length > 0) && (
-              <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }} />
+              <div className="border-t border-neutral-800" />
             )}
 
-            {/* Comments */}
             {comments.length > 0 && (
               <div className="flex flex-col gap-3">
-                <p className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
-                  Comments
-                </p>
+                <span className="text-neutral-500 text-xs font-semibold uppercase tracking-wider">
+                  Commenti
+                </span>
                 {comments.map((c, i) => (
-                  <div key={i} className="flex gap-2">
-                    <div className="w-7 h-7 rounded-full bg-neutral-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
-                      {c.author[0].toUpperCase()}
-                    </div>
+                  <div key={i} className="flex gap-2.5">
+                    <img
+                      src={`https://picsum.photos/seed/${c.author}/28/28`}
+                      alt={c.author}
+                      className="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-0.5"
+                    />
                     <div>
-                      <span className="text-white text-xs font-semibold">@{c.author}</span>{" "}
-                      <span className="text-neutral-400 text-xs">{c.text}</span>
+                      <span className="text-white text-xs font-semibold">
+                        @{c.author}{" "}
+                      </span>
+                      <span className="text-neutral-300 text-xs">{c.text}</span>
                     </div>
                   </div>
                 ))}
@@ -335,33 +458,34 @@ export default function ImageModal({ image, onClose, allImages = [] }) {
             )}
           </div>
 
-          {/* Fixed comment input */}
-          <form
-            onSubmit={handleComment}
-            className="flex items-center gap-2 px-4 py-3 flex-shrink-0"
-            style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-          >
-            <input
-              type="text"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Add a comment..."
-              className="flex-1 bg-neutral-800 text-white text-sm rounded-full px-4 py-2.5 outline-none placeholder-neutral-500"
-              style={{ border: "1px solid rgba(255,255,255,0.08)" }}
-            />
-            <button type="submit" className="text-[#E8000D] hover:text-white transition p-2">
-              <FaPaperPlane size={14} />
-            </button>
-          </form>
+          {/* Input commento fisso */}
+          <div className="border-t border-neutral-800 p-4 flex-shrink-0">
+            <form onSubmit={handleComment} className="flex items-center gap-2">
+              <input
+                type="text"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Aggiungi un commento..."
+                className="flex-1 bg-neutral-800 text-white text-sm rounded-full px-4 py-2.5 outline-none placeholder-neutral-500"
+                style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+              />
+              <button
+                type="submit"
+                disabled={!comment.trim()}
+                className="p-2.5 rounded-full flex-shrink-0 transition"
+                style={{
+                  background: comment.trim()
+                    ? "#E8000D"
+                    : "rgba(255,255,255,0.08)",
+                  color: comment.trim() ? "white" : "rgba(255,255,255,0.3)",
+                  transition: "all 200ms ease",
+                }}
+              >
+                <FaPaperPlane size={12} />
+              </button>
+            </form>
+          </div>
         </div>
-
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-neutral-400 hover:text-white transition p-1.5 rounded-lg hover:bg-neutral-800"
-        >
-          <FaTimes size={16} />
-        </button>
       </div>
     </div>
   );

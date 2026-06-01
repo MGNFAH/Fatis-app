@@ -42,9 +42,10 @@ export default function SaveToCollectionModal({ spark, onClose }) {
       setCollections((prev) => [created, ...prev]);
       setNewName("");
       setShowCreateForm(false);
+      // Salva automaticamente lo spark nella nuova collezione
       await handleSave(created.id);
     } catch (err) {
-      console.error("Error creating collection:", err);
+      console.error("Errore creazione collezione:", err);
     } finally {
       setCreating(false);
     }
@@ -52,121 +53,119 @@ export default function SaveToCollectionModal({ spark, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="flex flex-col w-full max-w-sm rounded-2xl overflow-hidden"
-        style={{
-          background: "#1a1a1a",
-          border: "1px solid rgba(255,255,255,0.08)",
-          maxHeight: "70vh",
-        }}
+        className="w-full max-w-sm rounded-2xl p-5 flex flex-col gap-4"
+        style={{ background: "#111" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div
-          className="flex items-center justify-between px-5 py-4 flex-shrink-0"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-        >
-          <h3 className="text-white font-semibold text-base">Save to collection</h3>
-          <button onClick={onClose} className="text-white/40 hover:text-white transition text-lg leading-none">
+        <div className="flex items-center justify-between">
+          <h2 className="text-white font-bold text-base">
+            Salva in collezione
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-white/40 hover:text-white text-lg"
+          >
             ✕
           </button>
         </div>
 
-        {/* Spark preview */}
-        <div
-          className="flex items-center gap-3 px-5 py-3 flex-shrink-0"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-        >
+        {/* Preview spark */}
+        <div className="flex items-center gap-3 bg-white/5 rounded-xl p-2.5">
           <img
             src={spark.url || spark.imageUrl}
             alt={spark.title}
-            className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+            className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
           />
-          <p className="text-white/70 text-sm font-medium truncate">
-            {spark.title || "Untitled Spark"}
+          <p className="text-white/60 text-xs truncate">
+            {spark.title || "Spark senza titolo"}
           </p>
         </div>
 
-        {/* Collection list */}
-        <div className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1.5">
-          {loading ? (
-            <div className="flex flex-col gap-2 px-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="skeleton h-12 rounded-xl" />
-              ))}
-            </div>
-          ) : (
-            <>
-              {collections.length === 0 && !showCreateForm && (
-                <div className="flex flex-col items-center gap-2 py-6 text-white/30">
-                  <span className="text-3xl">✦</span>
-                  <p className="text-sm">You have no collections yet.</p>
-                </div>
-              )}
-              {collections.map((col) => (
-                <button
-                  key={col.id}
-                  onClick={() => handleSave(col.id)}
-                  disabled={saving === col.id}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm transition-all ${
-                    saved[col.id]
-                      ? "bg-[#E8000D]/15 text-[#E8000D]"
-                      : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  <span>📁 {col.name}</span>
-                  <span className="text-xs">
-                    {saving === col.id ? "..." : saved[col.id] ? "✓ Saved" : "Save"}
-                  </span>
-                </button>
-              ))}
-            </>
-          )}
-        </div>
+        {/* Lista collezioni */}
+        {loading ? (
+          <div className="flex flex-col gap-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="skeleton h-12 rounded-xl" />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
+            {collections.length === 0 && !showCreateForm && (
+              <div className="flex flex-col items-center gap-2 py-4 text-white/30">
+                <span className="text-3xl">✦</span>
+                <p className="text-sm text-center">
+                  Non hai ancora collezioni.
+                </p>
+              </div>
+            )}
 
-        {/* Create new collection */}
-        <div
-          className="px-3 pb-3 pt-2 flex-shrink-0"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-        >
-          {showCreateForm ? (
-            <div className="flex gap-2">
-              <input
-                autoFocus
-                type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-                placeholder="Collection name..."
-                className="flex-1 bg-white/10 text-white text-sm rounded-xl px-3 py-2.5 outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
-              />
+            {collections.map((col) => (
               <button
-                onClick={handleCreate}
-                disabled={creating}
-                className="px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity disabled:opacity-50"
-                style={{ background: "#E8000D" }}
+                key={col.id}
+                onClick={() => handleSave(col.id)}
+                disabled={saving === col.id}
+                className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm transition-all ${
+                  saved[col.id]
+                    ? "bg-[#E8000D]/15 text-[#E8000D]"
+                    : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+                }`}
               >
-                {creating ? "..." : "Create"}
+                <span className="truncate font-medium">{col.name}</span>
+                <span className="flex-shrink-0 ml-2 text-xs">
+                  {saving === col.id
+                    ? "..."
+                    : saved[col.id]
+                      ? "✓ Salvato"
+                      : "Salva"}
+                </span>
               </button>
-              <button
-                onClick={() => { setShowCreateForm(false); setNewName(""); }}
-                className="px-3 py-2.5 rounded-xl text-sm text-white/40 hover:text-white transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-          ) : (
+            ))}
+          </div>
+        )}
+
+        {/* Form crea nuova collezione */}
+        {showCreateForm ? (
+          <div className="flex gap-2">
+            <input
+              autoFocus
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+              placeholder="Nome collezione..."
+              className="flex-1 bg-white/10 text-white text-sm rounded-xl px-3 py-2.5 outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+            />
             <button
-              onClick={() => setShowCreateForm(true)}
-              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm text-white/50 hover:text-white border border-white/10 hover:border-white/25 transition-all"
+              onClick={handleCreate}
+              disabled={creating || !newName.trim()}
+              className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#E8000D] text-white disabled:opacity-40 hover:bg-[#c0000b] transition-colors"
             >
-              <span className="text-lg leading-none">+</span> New collection
+              {creating ? "..." : "Crea"}
             </button>
-          )}
-        </div>
+            <button
+              onClick={() => {
+                setShowCreateForm(false);
+                setNewName("");
+              }}
+              className="px-3 py-2.5 rounded-xl text-sm text-white/40 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm text-white/50 hover:text-white border border-white/10 hover:border-white/25 transition-all"
+          >
+            <span className="text-base leading-none">+</span>
+            Nuova collezione
+          </button>
+        )}
       </div>
     </div>
   );
