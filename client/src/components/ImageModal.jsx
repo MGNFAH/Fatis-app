@@ -170,8 +170,7 @@ const handleSelect = (img) => {
                 Immagine non disponibile
               </p>
               <p className="text-neutral-500 text-sm mt-2 leading-relaxed max-w-sm">
-                Il sito potrebbe bloccare l&apos;hotlinking o l&apos;URL
-                dell&apos;immagine non è più valido.
+                The site may block hotlinking or the image URL is no longer valid.
               </p>
               {current.sourcePageUrl && (
                 <a
@@ -261,19 +260,19 @@ const handleSelect = (img) => {
                         }}
                         className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-white transition flex items-center gap-2"
                       >
-                        <FaLink size={12} /> Condividi spark
+                        <FaLink size={12} /> Share Spark
                       </button>
                       <button
                         onClick={() => setMenuOpen(false)}
                         className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-neutral-300 transition flex items-center gap-2"
                       >
-                        <FaUser size={12} /> Vedi profilo di @{current.author}
+                        <FaUser size={12} /> View profile of @{current.author}
                       </button>
                       <button
                         onClick={() => setMenuOpen(false)}
                         className="w-full text-left px-4 py-3 hover:bg-neutral-700 text-red-400 transition flex items-center gap-2"
                       >
-                        <FaFlag size={12} /> Segnala contenuto
+                        <FaFlag size={12} /> Report content
                       </button>
                     </div>
                   )}
@@ -416,7 +415,7 @@ const handleSelect = (img) => {
 
             {/* Altre opere dell'autore */}
             <HorizontalScroll
-              title={`Altre opere di @${current.author}`}
+              title={`Other works by @${current.author}`}
               icon={<FaUser size={11} />}
               items={authorWorks}
               onSelect={handleSelect}
@@ -424,7 +423,7 @@ const handleSelect = (img) => {
 
             {/* Suggeriti per tag */}
             <HorizontalScroll
-              title="Potrebbe piacerti"
+              title="Suggested for you"
               icon={<FaFire size={11} />}
               items={suggested}
               onSelect={handleSelect}
@@ -465,7 +464,7 @@ const handleSelect = (img) => {
                 type="text"
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Aggiungi un commento..."
+                placeholder="Add a comment..."
                 className="flex-1 bg-neutral-800 text-white text-sm rounded-full px-4 py-2.5 outline-none placeholder-neutral-500"
                 style={{ border: "1px solid rgba(255,255,255,0.08)" }}
               />

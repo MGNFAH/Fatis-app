@@ -45,7 +45,7 @@ export default function SaveToCollectionModal({ spark, onClose }) {
       // Salva automaticamente lo spark nella nuova collezione
       await handleSave(created.id);
     } catch (err) {
-      console.error("Errore creazione collezione:", err);
+      console.error("Error creating collection:", err);
     } finally {
       setCreating(false);
     }
@@ -64,7 +64,7 @@ export default function SaveToCollectionModal({ spark, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-white font-bold text-base">
-            Salva in collezione
+            Save to collection
           </h2>
           <button
             onClick={onClose}
@@ -99,7 +99,7 @@ export default function SaveToCollectionModal({ spark, onClose }) {
               <div className="flex flex-col items-center gap-2 py-4 text-white/30">
                 <span className="text-3xl">✦</span>
                 <p className="text-sm text-center">
-                  Non hai ancora collezioni.
+                  No collections yet.
                 </p>
               </div>
             )}
@@ -120,8 +120,8 @@ export default function SaveToCollectionModal({ spark, onClose }) {
                   {saving === col.id
                     ? "..."
                     : saved[col.id]
-                      ? "✓ Salvato"
-                      : "Salva"}
+                      ? "✓ Saved"
+                      : "Save"}
                 </span>
               </button>
             ))}
@@ -137,7 +137,7 @@ export default function SaveToCollectionModal({ spark, onClose }) {
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-              placeholder="Nome collezione..."
+              placeholder="Collection name..."      
               className="flex-1 bg-white/10 text-white text-sm rounded-xl px-3 py-2.5 outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
             />
             <button
@@ -145,7 +145,7 @@ export default function SaveToCollectionModal({ spark, onClose }) {
               disabled={creating || !newName.trim()}
               className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#E8000D] text-white disabled:opacity-40 hover:bg-[#c0000b] transition-colors"
             >
-              {creating ? "..." : "Crea"}
+              {creating ? "..." : "Create"}
             </button>
             <button
               onClick={() => {
@@ -163,7 +163,7 @@ export default function SaveToCollectionModal({ spark, onClose }) {
             className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm text-white/50 hover:text-white border border-white/10 hover:border-white/25 transition-all"
           >
             <span className="text-base leading-none">+</span>
-            Nuova collezione
+            New collection
           </button>
         )}
       </div>
