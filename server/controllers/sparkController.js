@@ -2,68 +2,113 @@ const Spark = require("../models/Spark");
 const UserLove = require("../models/userLove");
 const User = require("../models/User");
 const cloudinary = require("cloudinary").v2;
+const { sequelize } = require("../config/db");
+const { fn, col, literal } = require("sequelize");
 
-const formatSpark = (spark) => ({
-  id: spark.id,
-  url: spark.imageUrl,
-  imageUrl: spark.imageUrl,
-  title: spark.title || "Senza titolo",
-  caption: spark.caption || "",
-  category: spark.category || "",
-  source: spark.source || "",
-  tags: spark.tags || [],
-  loves: 0,
-  views: 0,
-  trending: false,
-  comments: [],
-  author: spark.User?.username || "anonymous", // image.author
-  avatar:
-    spark.User?.avatar ||
-    `https://picsum.photos/seed/${spark.User?.username || "anonymous"}/64/64`,
-  authorLevel: spark.User?.level || 1,
-  userId: spark.userId,
-  createdAt: spark.createdAt,
-});
+// Formatta uno spark arricchendolo con il conteggio reale dei love
+const formatSpark = (spark, lovedByUserId = null) => {
+  // spark.dataValues.loveCount viene da una subquery o da include con count
+  const loves = parseInt(spark.dataValues.loveCount ?? 0, 10);
+  // isLoved: true se lovedByUserId è nell'elenco dei lover (viene passato dall'endpoint)
+  const isLoved = spark.dataValues.isLoved ?? false;
 
+  return {
+    id: spark.id,
+    url: spark.imageUrl,
+    imageUrl: spark.imageUrl,
+    title: spark.title || "Senza titolo",
+    caption: spark.caption || "",
+    category: spark.category || "",
+    source: spark.source || "",
+    tags: spark.tags || [],
+    loves,
+    isLoved,
+    views: 0,
+    trending: loves >= 1000,
+    comments: [],
+    author: spark.User?.username || "anonymous",
+    avatar:
+      spark.User?.avatar ||
+      `https://picsum.photos/seed/${spark.User?.username || "anonymous"}/64/64`,
+    authorLevel: spark.User?.level || 1,
+    userId: spark.userId,
+    createdAt: spark.createdAt,
+  };
+};
+
+// Helper: carica tutti gli spark con conteggio love reale
+// Se userId è passato, aggiunge anche il flag isLoved per quell'utente
+async function fetchSparksWithLoves(where = {}, userId = null) {
+  const sparks = await Spark.findAll({
+    where,
+    order: [["createdAt", "DESC"]],
+    attributes: {
+      include: [
+        // Subquery: conta i UserLove per ogni spark
+        [
+          literal(
+            `(SELECT COUNT(*) FROM "UserLoves" WHERE "UserLoves"."sparkId" = "Spark"."id")`
+          ),
+          "loveCount",
+        ],
+        // Subquery: verifica se l'utente corrente ha già amato questo spark
+        userId
+          ? [
+              literal(
+                `(SELECT COUNT(*) FROM "UserLoves" WHERE "UserLoves"."sparkId" = "Spark"."id" AND "UserLoves"."userId" = ${userId})`
+              ),
+              "isLoved",
+            ]
+          : [literal("0"), "isLoved"],
+      ],
+    },
+    include: [{ model: User, attributes: ["username", "avatar", "level"] }],
+  });
+
+  return sparks.map((s) => {
+    // Normalizza isLoved da conteggio (0/1) a boolean
+    s.dataValues.isLoved = parseInt(s.dataValues.isLoved, 10) > 0;
+    return formatSpark(s, userId);
+  });
+}
 
 // READ - Tutti gli spark (feed pubblico)
 const getSparks = async (req, res) => {
   try {
-    const sparks = await Spark.findAll({
-      order: [["createdAt", "DESC"]],
-      include: [{ model: User, attributes: ["username", "avatar", "level"] }],
-    });
-    res.json(sparks.map(formatSpark));
+    // req.user potrebbe essere null se non autenticato (route pubblica)
+    const userId = req.user?.id ?? null;
+    const sparks = await fetchSparksWithLoves({}, userId);
+    res.json(sparks);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Errore nel recupero degli spark" });
   }
 };
 
-
 // READ - Solo gli spark dell'utente loggato
 const getMySparks = async (req, res) => {
   try {
-    const sparks = await Spark.findAll({
-      where: { userId: req.user.id },
-      order: [["createdAt", "DESC"]],
-      include: [{ model: User, attributes: ["username", "avatar", "level"] }],
-    });
-    res.json(sparks.map(formatSpark));
+    const sparks = await fetchSparksWithLoves(
+      { userId: req.user.id },
+      req.user.id
+    );
+    res.json(sparks);
   } catch (error) {
     res.status(500).json({ error: "Errore nel recupero degli spark" });
   }
 };
 
-
 // READ - Singolo spark per ID
 const getSparkById = async (req, res) => {
   try {
-    const spark = await Spark.findByPk(req.params.id, {
-      include: [{ model: User, attributes: ["username", "avatar", "level"] }],
-    });
-    if (!spark) return res.status(404).json({ error: "Spark non trovato" });
-    res.json(formatSpark(spark));
+    const userId = req.user?.id ?? null;
+    const sparks = await fetchSparksWithLoves(
+      { id: req.params.id },
+      userId
+    );
+    if (!sparks.length)
+      return res.status(404).json({ error: "Spark non trovato" });
+    res.json(sparks[0]);
   } catch (error) {
     res.status(500).json({ error: "Errore nel recupero dello spark" });
   }
@@ -87,10 +132,9 @@ const createSpark = async (req, res) => {
       tags: tags || [],
       userId: req.user.id,
     });
-const sparkWithUser = await Spark.findByPk(spark.id, {
-  include: [{ model: User, attributes: ["username", "avatar", "level"] }],
-});
-res.status(201).json(formatSpark(sparkWithUser));
+
+    const sparks = await fetchSparksWithLoves({ id: spark.id }, req.user.id);
+    res.status(201).json(sparks[0]);
   } catch (error) {
     res.status(500).json({ error: "Errore nella creazione dello spark" });
   }
@@ -105,7 +149,6 @@ const deleteSpark = async (req, res) => {
       return res.status(404).json({ error: "Spark non trovato" });
     }
 
-    // REGOLA: solo il proprietario può eliminarlo
     if (spark.userId !== req.user.id) {
       return res.status(403).json({ error: "Non autorizzato" });
     }
@@ -119,7 +162,7 @@ const deleteSpark = async (req, res) => {
 
 // ---- LOVE ----
 
-// Aggiungi love
+// Aggiungi love — restituisce il conteggio aggiornato
 const addLove = async (req, res) => {
   try {
     const spark = await Spark.findByPk(req.params.id);
@@ -128,7 +171,6 @@ const addLove = async (req, res) => {
       return res.status(404).json({ error: "Spark non trovato" });
     }
 
-    // REGOLA: non puoi mettere love due volte
     const existing = await UserLove.findOne({
       where: { userId: req.user.id, sparkId: req.params.id },
     });
@@ -140,11 +182,35 @@ const addLove = async (req, res) => {
     }
 
     await UserLove.create({ userId: req.user.id, sparkId: req.params.id });
-    res.status(201).json({ message: "Love aggiunto!" });
+
+    const count = await UserLove.count({ where: { sparkId: req.params.id } });
+    res.status(201).json({ message: "Love aggiunto!", loves: count, isLoved: true });
   } catch (error) {
     res.status(500).json({ error: "Errore nell'aggiunta del love" });
   }
 };
+
+// Rimuovi love — restituisce il conteggio aggiornato
+const removeLove = async (req, res) => {
+  try {
+    const love = await UserLove.findOne({
+      where: { userId: req.user.id, sparkId: req.params.id },
+    });
+
+    if (!love) {
+      return res.status(404).json({ error: "Love non trovato" });
+    }
+
+    await love.destroy();
+
+    const count = await UserLove.count({ where: { sparkId: req.params.id } });
+    res.json({ message: "Love rimosso", loves: count, isLoved: false });
+  } catch (error) {
+    res.status(500).json({ error: "Errore nella rimozione del love" });
+  }
+};
+
+// Firma Cloudinary
 const getUploadSignature = async (req, res) => {
   try {
     const timestamp = Math.round(new Date().getTime() / 1000);
@@ -152,7 +218,7 @@ const getUploadSignature = async (req, res) => {
     const paramsToSign = { timestamp, folder };
     const signature = cloudinary.utils.api_sign_request(
       paramsToSign,
-      process.env.CLOUDINARY_API_SECRET,
+      process.env.CLOUDINARY_API_SECRET
     );
     res.json({
       signature,
@@ -166,39 +232,23 @@ const getUploadSignature = async (req, res) => {
     res.status(500).json({ error: "Errore nella generazione della firma" });
   }
 };
-// Rimuovi love
-const removeLove = async (req, res) => {
-  try {
-    const love = await UserLove.findOne({
-      where: { userId: req.user.id, sparkId: req.params.id },
-    });
-
-    if (!love) {
-      return res.status(404).json({ error: "Love non trovato" });
-    }
-
-    await love.destroy();
-    res.json({ message: "Love rimosso" });
-  } catch (error) {
-    res.status(500).json({ error: "Errore nella rimozione del love" });
-  }
-};
 
 // Tutti gli spark che l'utente ha amato
 const getLovedSparks = async (req, res) => {
   try {
-   const loves = await UserLove.findAll({
-     where: { userId: req.user.id },
-     include: [
-       {
-         model: Spark,
-         include: [
-           { model: User, attributes: ["username", "avatar", "level"] },
-         ],
-       },
-     ],
-   });
-   res.json(loves.map((l) => formatSpark(l.Spark)));
+    const loves = await UserLove.findAll({
+      where: { userId: req.user.id },
+      attributes: ["sparkId"],
+    });
+    const sparkIds = loves.map((l) => l.sparkId);
+    if (!sparkIds.length) return res.json([]);
+
+    const { Op } = require("sequelize");
+    const sparks = await fetchSparksWithLoves(
+      { id: { [Op.in]: sparkIds } },
+      req.user.id
+    );
+    res.json(sparks);
   } catch (error) {
     res.status(500).json({ error: "Errore nel recupero degli spark amati" });
   }
