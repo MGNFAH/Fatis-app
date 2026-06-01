@@ -51,6 +51,7 @@ function CollectionCard({ collection, onClick }) {
 
 // ── CollectionModal ──────────────────────────────────────────────────────────
 function CollectionModal({ collection, onClose }) {
+   const sparks = collection.Sparks || collection.sparks || [];
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
