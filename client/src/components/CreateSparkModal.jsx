@@ -98,9 +98,9 @@ const validate = () => {
   if (imageMode === "hotlink") {
     if (!form.imageUrl.trim()) {
       newErrors.image = "Insert the direct URL of an image.";
-    } else if (remotePreviewError) {
-      newErrors.image = "This image cannot be loaded via hotlink.";
     }
+    // remotePreviewError NON è più bloccante: alcuni siti bloccano
+    // il caricamento nel browser ma l'URL è comunque valido per il DB.
   }
 
   if (!form.title.trim()) newErrors.title = "Title is required.";
@@ -312,17 +312,24 @@ const handleSubmit = async (e) => {
                 }}
               >
                 {preview ? (
-                  <img
-                    src={preview}
-                    alt="Preview remota"
-                    className="w-full max-h-72 object-contain"
-                    onError={() => {
-                      setRemotePreviewError(true);
-                    }}
-                    onLoad={() => {
-                      setRemotePreviewError(false);
-                    }}
-                  />
+                  remotePreviewError ? (
+                    <div className="flex flex-col items-center gap-2 px-4 text-center">
+                      <p className="text-neutral-400 text-xs">
+                        Preview not available — this site blocks hotlinking.
+                      </p>
+                      <p className="text-neutral-600 text-xs">
+                        The URL is saved correctly anyway.
+                      </p>
+                    </div>
+                  ) : (
+                    <img
+                      src={preview}
+                      alt="Preview remota"
+                      className="w-full max-h-72 object-contain"
+                      onError={() => setRemotePreviewError(true)}
+                      onLoad={() => setRemotePreviewError(false)}
+                    />
+                  )
                 ) : (
                   <p className="text-neutral-600 text-xs px-4 text-center">
                     Paste a direct URL of an image to preview.
@@ -331,8 +338,8 @@ const handleSubmit = async (e) => {
               </div>
 
               {remotePreviewError && (
-                <p className="text-xs" style={{ color: "#ff4d4d" }}>
-                  Image not loadable: site might block hotlinking.
+                <p className="text-xs" style={{ color: "#facc15" }}>
+                  ⚠ Preview blocked by the source site — your Spark will be published with this URL.
                 </p>
               )}
             </div>
@@ -380,7 +387,7 @@ const handleSubmit = async (e) => {
               scrollbarColor: "#3f3f3f transparent",
             }}
           >
-            {/* Errore generale — aggiunto qui */}
+            {/* Errore generale */}
             {errors.general && (
               <p
                 className="text-sm px-4 py-3 rounded-xl"
@@ -513,7 +520,7 @@ const handleSubmit = async (e) => {
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={handleTagKeyDown}
                     placeholder={
-                      tags.length === 0 ? "oilpainting, taly..." : ""
+                      tags.length === 0 ? "oilpainting, italy..." : ""
                     }
                     className="bg-transparent text-white text-xs outline-none flex-1 min-w-[120px] placeholder-neutral-600"
                   />
@@ -568,18 +575,4 @@ const handleSubmit = async (e) => {
       </div>
     </div>
   );
-  {
-    errors.general && (
-      <p
-        className="text-sm px-4 py-3 rounded-xl mx-6 mb-2"
-        style={{
-          background: "rgba(232,0,13,0.1)",
-          border: "1px solid rgba(232,0,13,0.2)",
-          color: "#ff4d4d",
-        }}
-      >
-        {errors.general}
-      </p>
-    );
-  }
 }
