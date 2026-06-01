@@ -10,11 +10,13 @@ const {
   removeLove,
   getLovedSparks,
   getUploadSignature,
+  getMyLoveCount,
 } = require("../controllers/sparkController");
 const authMiddleware = require("../middleware/authmid");
 
 router.get("/me", authMiddleware, getMySparks);
 router.get("/me/loved", authMiddleware, getLovedSparks);
+router.get("/me/loves/count", authMiddleware, getMyLoveCount);
 router.get("/upload-signature", authMiddleware, getUploadSignature);
 router.get("/", getSparks);
 router.get("/:id", getSparkById);
