@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router";
 import { useState, useEffect, useRef } from "react";
-import { FaFire } from "react-icons/fa";
+import { FaFire, FaCamera, FaPalette } from "react-icons/fa";
 import LoveGauge from "./LoveGauge";
 import SearchBar from "./SearchBar";
 import { useAuth } from "../hooks/useAuth";
@@ -125,11 +125,17 @@ export default function Navbar({ sparkCount, onSelectImage }) {
 
       {/* DESTRA — Auth dinamica */}
       <div className="flex items-center gap-3">
-        <button className="text-white/40 hover:text-white transition">
-          📷
+        <button
+          className="text-white/40 hover:text-white transition"
+          aria-label="Carica immagine"
+        >
+          <FaCamera className="text-base" />
         </button>
-        <button className="text-white/40 hover:text-white transition">
-          🌈
+        <button
+          className="text-white/40 hover:text-white transition"
+          aria-label="Palette colori"
+        >
+          <FaPalette className="text-base" />
         </button>
 
         {user ? (

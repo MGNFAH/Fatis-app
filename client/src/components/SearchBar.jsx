@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { FaSearch } from "react-icons/fa";
 import { useRotatingPlaceholder } from "../hooks/useRotatingPlaceholder";
 import { fakeImages } from "../data/placeholderImages.js"; // ← dati condivisi
 
@@ -46,14 +47,13 @@ export default function SearchBar({ onSelectImage }) {
           boxShadow: focused ? "0 0 0 3px rgba(232,0,13,0.15)" : "none",
         }}
       >
-        <span
-          className="mr-2 flex-shrink-0 transition-all duration-300"
+        <FaSearch
+          className="mr-2 flex-shrink-0 transition-all duration-300 text-sm"
           style={{
             color: focused ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.3)",
           }}
-        >
-          🔍
-        </span>
+          aria-hidden="true"
+        />
 
         <input
           type="text"
