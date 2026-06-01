@@ -19,7 +19,7 @@ const Spark = sequelize.define("Spark", {
     allowNull: true,
   },
   source: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING, 
     allowNull: true,
   },
   tags: {
