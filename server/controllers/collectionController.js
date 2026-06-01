@@ -8,9 +8,23 @@ const getMyCollections = async (req, res) => {
     const collections = await Collection.findAll({
       where: { userId: req.user.id },
       order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: CollectionSpark,
+          include: [{ model: Spark }],
+        },
+      ],
     });
-    res.json(collections);
+
+    // Normalizza: mappa gli spark in un array piatto con chiave "Sparks"
+    const result = collections.map((col) => ({
+      ...col.toJSON(),
+      Sparks: col.CollectionSparks?.map((cs) => cs.Spark) || [],
+    }));
+
+    res.json(result);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Errore nel recupero delle collezioni" });
   }
 };
@@ -37,7 +51,7 @@ const getCollectionById = async (req, res) => {
 
     res.json({
       ...collection.toJSON(),
-      sparks: collectionSparks.map((cs) => cs.Spark),
+      Sparks: collectionSparks.map((cs) => cs.Spark),
     });
   } catch (error) {
     res.status(500).json({ error: "Errore nel recupero della collezione" });

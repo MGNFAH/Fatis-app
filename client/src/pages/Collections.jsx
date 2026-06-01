@@ -32,7 +32,7 @@ function CollectionCard({ collection, onClick }) {
       className="flex flex-col gap-2 text-left group"
     >
       <div className="relative overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02]">
-        <CollectionCover sparks={collection.Sparks || []} />
+        <CollectionCover sparks={collection.sparks || []} />
         {!collection.isPublic && (
           <span className="absolute top-2 right-2 text-[10px] bg-black/60 text-white/70 px-2 py-0.5 rounded-full backdrop-blur-sm">
             🔒 Privata
@@ -42,7 +42,7 @@ function CollectionCard({ collection, onClick }) {
       <div className="px-0.5">
         <p className="text-white text-sm font-semibold truncate">{collection.name}</p>
         <p className="text-white/40 text-xs">
-          {collection.Sparks?.length || 0} spark
+          {collection.sparks?.length || 0} spark
         </p>
       </div>
     </button>
@@ -71,18 +71,19 @@ function CollectionModal({ collection, onClose }) {
           <button onClick={onClose} className="text-white/40 hover:text-white text-xl">✕</button>
         </div>
 
-        {collection.Sparks?.length === 0 ? (
+        {collection.sparks?.length === 0 ? (
           <p className="text-white/30 text-sm text-center py-10">
             Nessuno spark in questa collezione.
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {(collection.Sparks || []).map((spark) => (
+            {(collection.sparks || []).map((spark) => (
               <img
                 key={spark.id}
                 src={spark.url || spark.imageUrl}
                 alt={spark.title}
                 className="w-full aspect-square object-cover rounded-lg"
+                const sparks = collection.Sparks || collection.sparks || [];
               />
             ))}
           </div>
